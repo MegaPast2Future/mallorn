@@ -1,6 +1,6 @@
 #' Calculate expected Evolutionary Distinctiveness (expected ED) for every tip of a phylogenetic tree
 #'
-#' \code{expected.ed} calculates the expected Evolutionary Distinctiveness (expected ED) for
+#' \code{eED} calculates the expected Evolutionary Distinctiveness (expected ED) for
 #' each tip of a phylogenetic tree given probabilities of extinction for each
 #' tip, speciation and extinction rates, and a time into the future. It also
 #' calculates several other values for each edge of the tree like probability of
@@ -42,7 +42,7 @@
 #' @section Normal Use:
 #' Typical usage is
 #'
-#' \code{expected.ed(tree, tip.extinction.probabilities)}
+#' \code{eED(tree, tip.extinction.probabilities)}
 #'
 #' This will calculate expected ED on a tree without any projected future evolution. Most users will only need to designate a tree and a vector of extinction (\strong{not survial!}) probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
 #'
@@ -127,7 +127,7 @@
 #Function written by Matt Davis matt.davis@bios.au.dk
 
 
-#Version 2.1 has been renamed expected.ed to avoid namespace problems
+#Version 2.1 has been renamed eED to avoid namespace problems
 #Version 2.0 has improved error checking and documentation. Auto plotting has been removed.
 #Version 1.2 has optional plotting and auto save commands
 #Version 1.1 has improvements to improve speed
@@ -137,7 +137,7 @@
 
 
 
-expected.ed <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
+eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
 
   #What is the function version number
   version.number <- 2.1
@@ -524,7 +524,7 @@ expected.ed <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL,
   if(auto.save==T){
 
     #Save results
-    save(results, file=paste0("Results of expected.ed v.", version.number, " with Lambda = ", lambda, ", Mu = ", mu, ", and t = ", tMa, " million years from ", source.of.data ))
+    save(results, file=paste0("Results of eED v.", version.number, " with Lambda = ", lambda, ", Mu = ", mu, ", and t = ", tMa, " million years from ", source.of.data ))
 
   }#End save if statement
 
@@ -533,4 +533,4 @@ expected.ed <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL,
 
   return(results)
 
-}#End expected.ed function
+}#End eED function
