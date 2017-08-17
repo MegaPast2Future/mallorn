@@ -6,8 +6,16 @@
 \alias{mallorn-package}
 \title{Compute Expected Evolutionary Distinctiveness}
 \description{
-This is simple package to calculate Expected Evolutionary Distinctiveness (EED) for each tip of a phylogenetic tree.
+This is simple package to calculate Expected Evolutionary Distinctiveness (expected ED) for each tip of a phylogenetic tree.
 }
 \details{
-Currently, \pkg{mallorn} has only one function \code{\link{eed}}, which is used to calculate Expected Evolutionary Distinctiveness, the expected amount of unique evolutionary history belonging to each taxa.
+Currently, \pkg{mallorn} has only one function \code{\link{expected.ed}}, which is used to calculate Expected Evolutionary Distinctiveness, the expected amount of unique evolutionary history belonging to each taxa.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{http://github.com/ursus-americanus/mallorn}
+  \item Report bugs at \url{http://github.com/ursus-americanus/mallorn/issues}
+}
+
 }
