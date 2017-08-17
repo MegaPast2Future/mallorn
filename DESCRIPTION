@@ -1,0 +1,14 @@
+Package: mallorn
+Type: Package
+Title: Compute Expected Evolutionary Distinctiveness
+Version: 0.0.0.9000
+Author: Matt Davis [aut, cre],
+Maintainer: Matt Davis <matt.davis@bios.au.dk>
+Description: This is simple package to calculate Expected Evolutionary Distinctiveness
+    (EED) for each tip of a phylogenetic tree.
+License: CC0
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.3.2)
+Imports:  ape, matrixStats, picante
+RoxygenNote: 6.0.1
