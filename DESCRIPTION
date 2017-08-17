@@ -4,7 +4,7 @@ Title: Compute Expected Evolutionary Distinctiveness
 Version: 0.0.0.9000
 Author: Matt Davis [aut, cre],
 Maintainer: Matt Davis <matt.davis@bios.au.dk>
-Description: This is simple package to calculate Expected Evolutionary Distinctiveness
+Description: This is simple package to calculate expected Evolutionary Distinctiveness
     (expected ED) for each tip of a phylogenetic tree.
 License: CC0
 Encoding: UTF-8

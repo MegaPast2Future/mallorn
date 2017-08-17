@@ -36,8 +36,8 @@
 #'   evolutionary history that can be attributed to each tip. The sum of all
 #'   tip's ED values in a tree will equal PD but the sum of all tip's expected ED values
 #'   will equal expected PD (Faith, 2008). Each tip is given a probability of extinction from
-#'   0 to 1 that could reflect the taxa's actual extinction probability (e.g. IUCN) or
-#'   the probability of \emph{not} sampling this taxa in a certain community. Note that if each tip is given a 0 probability of extinction, expected ED simplifies to ED and this function will return the same results as \code{\link[picante]{evol.distinct}}, \code{type="fair.proportion"}.
+#'   0 to 1 that could reflect the taxon's actual extinction probability (e.g. IUCN) or
+#'   the probability of \emph{not} sampling this taxon in a certain community. Note that if each tip is given a 0 probability of extinction, expected ED simplifies to ED and this function will return the same results as \code{\link[picante]{evol.distinct}}, \code{type="fair.proportion"}.
 #'
 #' @section Normal Use:
 #' Typical usage is
