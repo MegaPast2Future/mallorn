@@ -1,4 +1,4 @@
-#' Calculate Expected Evolutionary Distinctiveness (expected ED) for every tip of a phylogenetic tree
+#' Calculate expected Evolutionary Distinctiveness (expected ED) for every tip of a phylogenetic tree
 #'
 #' \code{expected.ed} calculates the expected Evolutionary Distinctiveness (expected ED) for
 #' each tip of a phylogenetic tree given probabilities of extinction for each
@@ -35,9 +35,9 @@
 #'   implementation of ED so that expected ED is the expected amount of unique
 #'   evolutionary history that can be attributed to each tip. The sum of all
 #'   tip's ED values in a tree will equal PD but the sum of all tip's expected ED values
-#'   will equal expected PD. Each tip is given a probability of extinction from
-#'   0 to 1 that could reflect actual extinction probabilities (e.g. IUCN) or
-#'   probabilities of sampling/occurence. Note that if each tip is given a 0 probability of extinction, expected ED simplifies to ED and this function will return the same results as \code{\link[picante]{evol.distinct}}, \code{type="fair.proportion"}.
+#'   will equal expected PD (Faith, 2008). Each tip is given a probability of extinction from
+#'   0 to 1 that could reflect the taxa's actual extinction probability (e.g. IUCN) or
+#'   the probability of \emph{not} sampling this taxa in a certain community. Note that if each tip is given a 0 probability of extinction, expected ED simplifies to ED and this function will return the same results as \code{\link[picante]{evol.distinct}}, \code{type="fair.proportion"}.
 #'
 #' @section Normal Use:
 #' Typical usage is
@@ -104,13 +104,15 @@
 #'  Matt Davis
 #'
 #' @references
+#'  Faith, D. P. (2008). Threatened species and the potential loss of phylogenetic diversity: conservation scenarios based on estimated extinction probabilities and phylogenetic risk analysis. Conservation Biology, 22(6), 1461–1470.
+#'
 #'  Kembel, S. W., Cowan, P. D., Helmus, M. R., Cornwell, W. K., Morlon, H., Ackerly, D. D., et al. (2010). Picante: R tools for integrating phylogenies and ecology. Bioinformatics, 26(11), 1463–1464.
 #'
 #'  Mooers, A., Gascuel, O., Stadler, T., Li, H., & Steel, M. (2012). Branch lengths on birth–death trees and the expected loss of phylogenetic diversity. Systematic Biology, 61(2), 195–203.
 #'
 #'  Paradis, E., Claude, J. and Strimmer, K. (2004) APE: analyses of phylogenetics and evolution in R language. Bioinformatics, 20, 289–290.
 #'
-#'  Redding, D. W., Mazel, F., & Mooers, A. Ø. (2014). Measuring evolutionary isolation for conservation. PLoS ONE, 9(12), e113490. http://doi.org/10.1371/journal.pone.0113490Ë
+#'  Redding, D. W., Mazel, F., & Mooers, A. Ø. (2014). Measuring evolutionary isolation for conservation. PLoS ONE, 9(12), e113490.
 #'
 #' @export
 #'
