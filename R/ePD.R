@@ -177,7 +177,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   numcommunities <- length(communities)
 
   # Make the matrix to store final results in
-  community.values <- matrix(data=NA, nrow=numcommunities, ncol=1, dimnames=list(colnames(tip.extinction.probabilities.matrix2), "Expected.Phylo.Diversity.Ma"))
+  community.values <- matrix(data=NA, nrow=numcommunities, ncol=2, dimnames=list(colnames(tip.extinction.probabilities.matrix2), c("Expected.Phylo.Diversity.Ma", "Expected.Species.Diversity")))
 
 
 
@@ -232,6 +232,38 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
   ##################################
 
+  #From Mooers, A., Gascuel, O., Stadler, T., Li, H., & Steel, M. (2012). Branch lengths on birth–death trees and the expected loss of phylogenetic diversity. Systematic Biology, 61(2), 195–203. (And many other authors who have used this equation)
+
+  #This function calculates the average number of tips (species) in the reconstructed birth-death tree. Trees that don't make it to time t, i.e. number of tips = 0 are included in this average
+  #This equation is half the value of that used by Mooers et al. because they are starting with two lineages
+
+  expectedtips <-  function(lambda=lambda, mu=mu, tMa=timeMa){
+
+    numberoftips <- exp((lambda-mu)*tMa)
+
+    return(numberoftips)
+
+  }#End expectedtips
+
+
+
+  # Calculate global tree values ##############################################
+
+
+
+  # What is the expected average growth per lineage till time t
+  #If t is 0, this length should be 0
+  new.lineage.growth <- theorem4(lambda = lambda, mu=mu, tMa=tMa)
+
+  # What is the probability of a tip that is already extant at time 0 surviving until time t
+  # If t is 0, this probability should be 1
+  prob.lineage.future <- probsurvive(lambda = lambda, mu=mu, tMa=tMa)
+
+  # How many tips (species) will be produced for each existing lineage
+  # IF t is 0, this should be 1
+  num.tips.per.lineage <- expectedtips(lambda = lambda, mu=mu, tMa=tMa)
+
+
 
 
 
@@ -256,15 +288,6 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
     # Calculate tree values ##############################################
 
-
-
-    # What is the expected average growth per lineage till time t
-    #If t is 0, this length should be 0
-    new.lineage.growth <- theorem4(lambda = lambda, mu=mu, tMa=tMa)
-
-    # What is the probability of a tip that is already extant at time 0 surviving until time t
-    # If t is 0, this probability should be 1
-    prob.lineage.future <- probsurvive(lambda = lambda, mu=mu, tMa=tMa)
 
     # Calculate the probability of a tip surviving until time t
     tipprobs$Prob.Tip.Survive.t <- (1-tipprobs$Prob.Tip.Extinct.0)*prob.lineage.future
@@ -380,6 +403,10 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
     # So add in new evolution to get the total expected phylogenetic diversity
     community.values[i, "Expected.Phylo.Diversity.Ma"] <- Expected.Phylo.Diversity.Ma.no.new + total.new.lineage.growth
+
+    # The sum of tip survival probabilities at t=0 is the number of expected tips. Multiply that by the number of tips generated per exisiting lineage to get the total tip (species) richness
+    community.values[i, "Expected.Species.Diversity"] <- sum(1-tipprobs$Prob.Tip.Extinct.0) * num.tips.per.lineage
+
 
   }#End i community loop
 

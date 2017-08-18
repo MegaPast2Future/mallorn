@@ -163,7 +163,7 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
   # Check the extinction probabilities
   # Are there extinction probabilities? If not, give every species an extinction probability of 0
   if(is.null(tip.extinction.probabilities)){
-    warning("No extinction probabilities entered. All tips given 0 probability of going extint.")
+    warning("No extinction probabilities entered. All tips given 0 probability of going extinct")
 
     tip.extinction.probabilities <- rep(0, times=length(tree$tip.label))
     names(tip.extinction.probabilities) <- as.character(tree$tip.label)
