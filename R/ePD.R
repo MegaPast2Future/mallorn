@@ -103,7 +103,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
   # Check the tree
   # Is there a tree?
-  if(missing(tree)){stop("You need a phylogenetic tree to calculate expected ED")}
+  if(missing(tree)){stop("You need a phylogenetic tree to calculate expected PD")}
 
   # Is the tree in the right format?
   if(!ape::is.rooted.phylo(tree) | !ape::is.binary(tree)){stop("Tree must be a rooted, fully resolved phylogeney of class phylo")}
@@ -116,30 +116,27 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
 
   # Check the extinction probabilities
-  # Are there extinction probabilities? If not, give every species an extinction probability of 0
-  if(is.null(tip.extinction.probabilities)){
-    warning("No extinction probabilities entered. All tips given 0 probability of going extint.")
-
-    tip.extinction.probabilities <- rep(0, times=length(tree$tip.label))
-    names(tip.extinction.probabilities) <- as.character(tree$tip.label)
+  # Are there extinction probabilities? If not, stop
+  if(is.null(tip.extinction.probabilities.matrix)){
+    stop("You need to enter a taxon by commmunity matrix of extinction probabilities")
   }
 
   # Are the extinction probabilities actually probabilities?
-  if(any(tip.extinction.probabilities > 1) |
-     any(tip.extinction.probabilities < 0) |
-     !is.numeric(tip.extinction.probabilities)){
+  if(any(tip.extinction.probabilities.matrix > 1) |
+     any(tip.extinction.probabilities.matrix < 0) |
+     !is.numeric(tip.extinction.probabilities.matrix)){
     stop("Check to make sure your tip extinction probabilities are from 0 to 1 and numeric")
   }
 
   # Do the names on the extinction probabilities match the names on the tree
-  if(!all(names(tip.extinction.probabilities) %in% tree$tip.label) |
-     !length(tip.extinction.probabilities)==length(tree$tip.label)){
+  if(!all(rownames(tip.extinction.probabilities.matrix) %in% tree$tip.label) |
+     !dim(tip.extinction.probabilities.matrix)[1]==length(tree$tip.label)){
     stop("Check that your tree tip names match the extinction probability names")
   }
 
-  if(any(duplicated(names(tip.extinction.probabilities))) |
+  if(any(duplicated(rownames(tip.extinction.probabilities.matrix))) |
      any(duplicated(tree$tip.label))){
-    stop("You have duplicate names")
+    stop("You have duplicate taxa names")
   }
 
 
