@@ -281,7 +281,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
     # To get the expected new evolution, multiply the probability that a tip even survives to the present (t=0) times the expected average new growth per lineage
     #If t is 0, these lengths should all be 0
     #The sum of these lengths is the total new evolution on the tree
-    total.new.lineage.growth <- sum(tipprobs$Prob.Tip.Survive.0*new.lineage.growth)
+    total.new.lineage.growth <- sum((1-tipprobs$Prob.Tip.Extinct.0) * new.lineage.growth)
 
 
     #Get the number ot tips
