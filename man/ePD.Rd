@@ -25,7 +25,11 @@ ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
 \value{
 A list with components:
 \itemize{
-\item \strong{community.values} A single column matrix with expected Phylogenetic Diversity (expected PD) in millions of years of evolution for each community
+\item \strong{community.values} A matrix with expected Phylogenetic Diversity (expected PD) and expected species richness for each community
+\describe{
+  \item{Expected.Phylo.Diversity.Ma}{The expected PD in millions of years of evolution. This will include new evolution if \code{tMa} does not equal 0.}
+  \item{Expected.Species.Diversity}{The expected taxonomic richness. This is really the expected number of tips so depending on the taxonomic resolution of your tree, this could be species, subspecies, or whole orders. This will include newly evolved tips if \code{tMa} does not equal 0.}
+  }
 
 \item \strong{tip.extinction.probabilities.matrix} The original taxon by community matrix of extinction probabilities
 

@@ -42,7 +42,11 @@
 #'
 #' @return A list with components:
 #' \itemize{
-#' \item \strong{community.values} A single column matrix with expected Phylogenetic Diversity (expected PD) in millions of years of evolution for each community
+#' \item \strong{community.values} A matrix with expected Phylogenetic Diversity (expected PD) and expected species richness for each community
+#' \describe{
+#'   \item{Expected.Phylo.Diversity.Ma}{The expected PD in millions of years of evolution. This will include new evolution if \code{tMa} does not equal 0.}
+#'   \item{Expected.Species.Diversity}{The expected taxonomic richness. This is really the expected number of tips so depending on the taxonomic resolution of your tree, this could be species, subspecies, or whole orders. This will include newly evolved tips if \code{tMa} does not equal 0.}
+#'   }
 #'
 #' \item \strong{tip.extinction.probabilities.matrix} The original taxon by community matrix of extinction probabilities
 #'
@@ -237,7 +241,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   #This function calculates the average number of tips (species) in the reconstructed birth-death tree. Trees that don't make it to time t, i.e. number of tips = 0 are included in this average
   #This equation is half the value of that used by Mooers et al. because they are starting with two lineages
 
-  expectedtips <-  function(lambda=lambda, mu=mu, tMa=timeMa){
+  expectedtips <-  function(lambda=NA, mu=NA, tMa=NA){
 
     numberoftips <- exp((lambda-mu)*tMa)
 
