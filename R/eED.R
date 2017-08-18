@@ -184,7 +184,7 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
 
   if(any(duplicated(names(tip.extinction.probabilities))) |
     any(duplicated(tree$tip.label))){
-    stop("You have duplicate names")
+    stop("You have duplicate taxa names")
   }
 
 
