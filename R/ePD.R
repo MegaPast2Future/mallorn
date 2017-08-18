@@ -44,7 +44,7 @@
 #' \itemize{
 #' \item \strong{community.values} A single column matrix with expected PD in millions of years of evolution for each community
 #'
-#' \item \strong{tip.extinction.probabilities.matrix} The original taxa by community matrix of extinction probabilities
+#' \item \strong{tip.extinction.probabilities.matrix} The original taxon by community matrix of extinction probabilities
 #'
 #' \item \strong{tree} The original phylo object input
 #'
@@ -168,14 +168,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   tipprobs0 <- data.frame(Labels=rownames(tip.extinction.probabilities.matrix2),
                          Prob.Tip.Extinct.0=NA,
                          Prob.Tip.Extinct.t = NA,
-                         Prob.Tip.Survive.t = NA,
-                         Expected.Evol.Distinct.Ma.no.new = NA,
-                         Expected.Evol.Distinct.Ma = NA,
-                         Expected.Evol.Distinct.perc = NA,
-                         Expected.Evol.Distinct.Ma.loss = NA,
-                         Expected.Evol.Distinct.perc.loss = NA,
-                         Pendant.Edge.Ma = NA,
-                         Expected.Pendant.Edge.Ma.loss = NA)
+                         Prob.Tip.Survive.t = NA,)
   rownames(tipprobs0) <- tipprobs0$Labels
   #head(tipprobs0)
 
@@ -283,6 +276,14 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
     # Pull out those values as a vector to speed up downstream calculations. They will be in the same order as the tip labels
     tipprobs.extinct.t <- tipprobs[ , "Prob.Tip.Extinct.t"]
 
+
+
+    # To get the expected new evolution, multiply the probability that a tip survives times the expected average growth per lineage until time t
+    #If t is 0, these lengths should all be 0
+    #The sum of these lengths is the total new evolution on the tree
+    total.new.lineage.growth <- sum(tipprobs$Prob.Tip.Survive.t*new.lineage.growth)
+
+
     #Get the number ot tips
     ntaxa <- length(thistree$tip.label)
 
@@ -374,110 +375,27 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
 
 
-    # The sum of the expected edge lengths in the expected phylogenetic diversity for the community
-    community.values[i, "Expected.Phylo.Diversity.Ma"] <- sum(thesenodelengths[, "Expected.Edge.Length.Ma"])
+    # The sum of the expected edge lengths in the expected phylogenetic diversity for the community without new evolution
+    Expected.Phylo.Diversity.Ma.no.new <- sum(thesenodelengths[, "Expected.Edge.Length.Ma"])
 
+    # So add in new evolution to get the total expected phylogenetic diversity
+    community.values[i, "Expected.Phylo.Diversity.Ma"] <- Expected.Phylo.Diversity.Ma.no.new + total.new.lineage.growth
 
   }#End i community loop
 
 
 
-
-
-
-
-
-
-
-
-
-  # Calculate tip values ##############################################
-  # Now calculate expected evolutionary distinctiveness loss for each taxa
-
-
-  # So for each taxa
-
-  # For progress report
-  start.time2 <- proc.time()
-  # Will take a few seconds
-
-  for(q in 1:ntaxa){
-
-    thistaxa <- thistree$tip.label[q]
-
-    # Get all the edges a taxa subtends
-    this.taxas.nodes <- nodes[!is.na( Prob.Tip.Extinct.t[, thistaxa])]
-
-    # Now multiply the relative loss of length by extinction probability of this taxon to see how much of the lost length it is responsible for
-    tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma.loss"] <- sum(tipprobs[thistaxa, "Prob.Tip.Extinct.t"] * thesenodelengths[nodes %in% this.taxas.nodes, "Expected.Edge.Length.rel.loss"], na.rm = T)
-
-    # The sum of that is the expected evolutionary distinctiveness of the expected loss of PD for this taxa
-
-
-    # Do the same for expected evolutionary distinctiveness (excluding new evolution of branch lengths)
-    tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma.no.new" ] <- sum(tipprobs[thistaxa, "Prob.Tip.Survive.t"] * thesenodelengths[nodes %in% this.taxas.nodes, "Expected.Edge.Length.rel"], na.rm = T)
-
-    # Get the expected growth of tree length per lineage to time t and multiply it by the probability that a tip even survived to time 0. Then add that to the expected evolutionary distinctiveness excluding new evolution
-    tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma" ] <- tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma.no.new" ] + (new.lineage.growth * (1-tipprobs[tipprobs$Labels==thistaxa, "Prob.Tip.Extinct.0" ]))
-
-
-    # Get the length of the pendant edge of this species = the species age = unique evolution
-    # Find which edge has that species and then what that edgelength is
-    tipprobs[tipprobs$Labels==thistaxa, "Pendant.Edge.Ma" ] <- thistree$edge.length[which(nodes==q)]
-
-
-
-    # Update progress report every 500th taxa
-    if(q%%500==0){
-      loop.elapsed.time2 <- proc.time()-start.time2
-      time.per.taxa <- loop.elapsed.time2/q
-
-      time.left2 <- round((time.per.taxa*(ntaxa-q))[3]/60, digits=1)
-
-      message(paste0("##### Just finished taxa ", q, " of ", ntaxa, ".  Possibly ", time.left2, " minutes left"))
-    }
-
-  }#End q loop
-
-
-
-  # Check
-  # PD should equal expected PD + the sum of expected evolutionary distinctiveness loss
-  # Expected PD equals the sum of expected evolutionary distinctiveness without new evolution
-  # So these two quantities should be the same
-  #picante::pd(tree=thistree, samp=matrix(data=rep(1, ntaxa), nrow=1, dimnames=list(NULL, tipprobs$Labels) ))
-  #sum(tipprobs$Expected.Evol.Distinct.Ma.no.new, tipprobs$Expected.Evol.Distinct.Ma.loss)
-
-
-  # Calculate percentages
-  tipprobs$Expected.Evol.Distinct.perc <- 100*tipprobs$Expected.Evol.Distinct.Ma/sum(tipprobs$Expected.Evol.Distinct.Ma)
-
-  tipprobs$Expected.Evol.Distinct.perc.loss <- 100*tipprobs$Expected.Evol.Distinct.Ma.loss/sum(tipprobs$Expected.Evol.Distinct.Ma.loss)
-
-  # Get the expected loss of length from the pendant edge
-  tipprobs$Expected.Pendant.Edge.Ma.loss <- tipprobs$Pendant.Edge.Ma * tipprobs$Prob.Tip.Extinct.t
-
-
-
-
   # Save results #########################################################################
 
-  # Remove some of the values used for internal calculations that will just be confusing to most users
-  thesenodelengths2 <- as.data.frame(thesenodelengths)
-  thesenodelengths2$sum.Prob.Tip.Extinct.t <- NULL
-  thesenodelengths2$sum.Prob.Tip.Survive.t <- NULL
-  thesenodelengths2$Expected.Edge.Length.rel <- NULL
-  thesenodelengths2$Expected.Edge.Length.rel.loss <- NULL
-  #head(thesenodelengths2)
 
   #If t = 0, don't include speciation rates and extinction rates as that will just be confusing.
   if(tMa==0){
 
-    results <- list(tip.values=tipprobs, edge.values=thesenodelengths2, tree=tree, lambda=NA, mu=NA, tMa=tMa, source.of.data=source.of.data)
+    results <- list(community.values=community.values, tip.extinction.probabilities.matrix=tip.extinction.probabilities.matrix, tree=tree, lambda=NA, mu=NA, tMa=tMa, source.of.data=source.of.data)
 
   }else{
 
-    results <- list(tip.values=tipprobs, edge.values=thesenodelengths2, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
+    results <- list(community.values=community.values, tip.extinction.probabilities.matrix=tip.extinction.probabilities.matrix, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
 
   }
 
@@ -486,7 +404,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   if(auto.save==T){
 
     #Save results
-    save(results, file=paste0("Results of eED v.", version.number, " with Lambda = ", lambda, ", Mu = ", mu, ", and t = ", tMa, " million years from ", source.of.data ))
+    save(results, file=paste0("Results of ePD v.", version.number, " with Lambda = ", lambda, ", Mu = ", mu, ", and t = ", tMa, " million years from ", source.of.data ))
 
   }#End save if statement
 
@@ -495,6 +413,6 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
   return(results)
 
-}#End eED function
+}#End ePD function
 
 
