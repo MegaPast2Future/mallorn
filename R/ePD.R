@@ -131,7 +131,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   # Do the names on the extinction probabilities match the names on the tree
   if(!all(rownames(tip.extinction.probabilities.matrix) %in% tree$tip.label) |
      !dim(tip.extinction.probabilities.matrix)[1]==length(tree$tip.label)){
-    stop("Check that your tree tip names match the extinction probability names")
+    stop("Check that your tree tip names match the row names for your extinction probability matrix")
   }
 
   if(any(duplicated(rownames(tip.extinction.probabilities.matrix))) |
@@ -162,10 +162,11 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   thistree <- tree
 
   # Make sure the names of the extinction probabilities are in the same order as the tree tip labels
-  tip.extinction.probabilities2 <- tip.extinction.probabilities[thistree$tip.label]
+  tip.extinction.probabilities.matrix2 <- tip.extinction.probabilities.matrix[thistree$tip.label, ]
 
-  tipprobs <- data.frame(Labels=names(tip.extinction.probabilities2),
-                         Prob.Tip.Extinct.0=tip.extinction.probabilities2,
+
+  tipprobs0 <- data.frame(Labels=rownames(tip.extinction.probabilities.matrix2),
+                         Prob.Tip.Extinct.0=NA,
                          Prob.Tip.Extinct.t = NA,
                          Prob.Tip.Survive.t = NA,
                          Expected.Evol.Distinct.Ma.no.new = NA,
@@ -175,10 +176,15 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
                          Expected.Evol.Distinct.perc.loss = NA,
                          Pendant.Edge.Ma = NA,
                          Expected.Pendant.Edge.Ma.loss = NA)
-  rownames(tipprobs) <- tipprobs$Labels
-  #head(tipprobs)
+  rownames(tipprobs0) <- tipprobs0$Labels
+  #head(tipprobs0)
 
+  # How many communities are there?
+  communities <- colnames(tip.extinction.probabilities.matrix2)
+  numcommunities <- length(communities)
 
+  # Make the matrix to store final results in
+  community.values <- matrix(data=NA, nrow=numcommunities, ncol=1, dimnames=list(colnames(tip.extinction.probabilities.matrix2), "Expected.Phylo.Diversity.Ma"))
 
 
 
@@ -236,148 +242,152 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
 
 
-  # Calculate tree values ##############################################
+  # Split into different communities
 
-  # What is the expected average growth per lineage till time t
-  #If t is 0, this length should be 0
-  new.lineage.growth <- theorem4(lambda = lambda, mu=mu, tMa=tMa)
+  #Values for each community will be calculated in a big for loop
 
-  # What is the probability of a tip that is already extant at time 0 surviving until time t
-  # If t is 0, this probability should be 1
-  prob.lineage.future <- probsurvive(lambda = lambda, mu=mu, tMa=tMa)
+  for(i in 1:numcommunities){
 
-  # Calculate the probability of a tip surviving until time t
-  tipprobs$Prob.Tip.Survive.t <- (1-tipprobs$Prob.Tip.Extinct.0)*prob.lineage.future
+    # Pull out this community
+    thiscom <- communities[i]
 
-  # Calculate the probability of a tip going extinct before time t
-  tipprobs$Prob.Tip.Extinct.t <- 1-tipprobs$Prob.Tip.Survive.t
+    # Pull out the extinction probabilities
+    tipprobs <- tipprobs0
 
-
-  # Pull out those values as a vector to speed up downstream calculations. They will be in the same order as the tip labels
-  tipprobs.extinct.t <- tipprobs[ , "Prob.Tip.Extinct.t"]
-
-  #Get the number ot tips
-  ntaxa <- length(thistree$tip.label)
-
-
-  # Pull out the nodes
-  # Pull out the second column as that is tipward end of an edge. The first column is the node where an edge starts (the rootward side)
-  nodes <- thistree$edge[,2]
-  numnodes <- length(nodes)
-  #head(nodes)
-  #View(thistree$edge)
+    tipprobs$Prob.Tip.Extinct.0 <- tip.extinction.probabilities.matrix2[ ,i]
 
 
 
-  # Make a matrix for node memberships and extinction probabilities to go into
-  Prob.Tip.Extinct.t <- matrix(data=NA, nrow=length(nodes), ncol=ntaxa, dimnames=list(nodes, thistree$tip.label))
-  #head(Prob.Tip.Extinct.t)
-  #View(Prob.Tip.Extinct.t)
 
 
 
-  # Calculate node values ##############################################
+    # Calculate tree values ##############################################
 
 
 
-  # Make a matrix to store information for each edge (ending at the listed node)
-  variables <- c('Node', "Daughters", "Edge.Length.Ma", "Node.Age.Ma", "Prob.Edge.Extinct.t", "Prob.Edge.Survive.t",  "Expected.Edge.Length.Ma", "Expected.Edge.Length.Ma.loss", "sum.Prob.Tip.Extinct.t", "sum.Prob.Tip.Survive.t", "Expected.Edge.Length.rel", "Expected.Edge.Length.rel.loss")
+    # What is the expected average growth per lineage till time t
+    #If t is 0, this length should be 0
+    new.lineage.growth <- theorem4(lambda = lambda, mu=mu, tMa=tMa)
 
-  thesenodelengths <- matrix(data=NA, nrow=length(nodes), ncol=length(variables), dimnames=list(NULL, variables))
-  #head(thesenodelengths)
-  #View(thesenodelengths)
+    # What is the probability of a tip that is already extant at time 0 surviving until time t
+    # If t is 0, this probability should be 1
+    prob.lineage.future <- probsurvive(lambda = lambda, mu=mu, tMa=tMa)
 
-  # For progress report
-  start.time <- proc.time()
-  # Will take about an 30 seconds for a tree with 6,000 tips
+    # Calculate the probability of a tip surviving until time t
+    tipprobs$Prob.Tip.Survive.t <- (1-tipprobs$Prob.Tip.Extinct.0)*prob.lineage.future
 
-
-  for (j in 1:length(nodes)) {
-
-    # Now for every node
-    # What is this node?
-    thesenodelengths[j,'Node'] <- nodes[j]
-
-    # Which nodes/tips subtend this node?
-    sons <- picante::.node.desc(thistree, nodes[j])
-
-    # Which tips subtend this node?
-    # Fill in those slots in the matrix with the right probabilities
-    Prob.Tip.Extinct.t[j, sons$tips] <- tipprobs.extinct.t[sons$tips]
+    # Calculate the probability of a tip going extinct before time t
+    tipprobs$Prob.Tip.Extinct.t <- 1-tipprobs$Prob.Tip.Survive.t
 
 
-    # How many tips subtend this node?
-    thesenodelengths[j, "Daughters"] <- length(sons$tips)
+    # Pull out those values as a vector to speed up downstream calculations. They will be in the same order as the tip labels
+    tipprobs.extinct.t <- tipprobs[ , "Prob.Tip.Extinct.t"]
 
-    # Now what is the branchlength connecting to that node
-    thesenodelengths[j, "Edge.Length.Ma"] <- thistree$edge.length[j]
+    #Get the number ot tips
+    ntaxa <- length(thistree$tip.label)
 
 
-    # Update progress report every 1000th node
-    if(j %% 1000==0){
-      loop.elapsed.time <- proc.time()-start.time
-      time.per.node <- loop.elapsed.time/j
-
-      time.left <- round((time.per.node*(numnodes-j))[3]/60, digits=1)
-
-      message(paste0("##### Just finished node ", j, " of ", numnodes, ".  Possibly ", time.left, " minutes left"))
-    }
+    # Pull out the nodes
+    # Pull out the second column as that is tipward end of an edge. The first column is the node where an edge starts (the rootward side)
+    nodes <- thistree$edge[,2]
+    numnodes <- length(nodes)
+    #head(nodes)
+    #View(thistree$edge)
 
 
 
-  }# End j loop
-  #View(thesenodelengths)
-
-  # Get the probabilities of survival
-  Prob.Tip.Survive.t <- 1-Prob.Tip.Extinct.t
-
-
-  rownames(thesenodelengths) <- thesenodelengths[, "Node"]
+    # Make a matrix for node memberships and extinction probabilities to go into
+    Prob.Tip.Extinct.t <- matrix(data=NA, nrow=length(nodes), ncol=ntaxa, dimnames=list(nodes, thistree$tip.label))
+    #head(Prob.Tip.Extinct.t)
+    #View(Prob.Tip.Extinct.t)
 
 
-  # Get the age of each node
-  node.age <- ape::branching.times(thistree)
-
-  # These nodes are labeled with the number of the ancester node = the node on the rootward side of an edge
-  # The first column of the tree edge matrix corresponds to the rootward side of an edge = the node where the edge starts. So each node will have two edges subtending it
-  # So we need to double the node ages and match them up with the order of the edge labels
-
-  # This creates the order we need pull the nodes out and match them up with edges
-  node.order <- match(x=thistree$edge[,1], table=names(node.age))
-  #length(node.order)# Same as the number of edges we have
-  thesenodelengths[, "Node.Age.Ma"] <- node.age[node.order]
 
 
-  # Now multiply tip probabilites to get the probability of extinction of each edge
-  # An edge will only go extinct if every tip subtending it goes extinct. So the probability of an edge going extinct is the product of all the extinction probabilities of the tips subtending it
-  thesenodelengths[, "Prob.Edge.Extinct.t"] <-  matrixStats::rowProds(Prob.Tip.Extinct.t, na.rm=T)
-  # Slightly slower version below
-  #thesenodelengths[, "Prob.Edge.Extinct.t"] <-  apply(Prob.Tip.Extinct.t, 1, function(x) prod(x, na.rm=T))
 
-  # The probability that the edge survives to time t
-  thesenodelengths[, "Prob.Edge.Survive.t"] <-  1 - thesenodelengths[, "Prob.Edge.Extinct.t"]
 
-  # Now we can calculate expected edge length by multiplying the original edge length by the probability that that edge is actually there
-  thesenodelengths[, "Expected.Edge.Length.Ma"] <- thesenodelengths[, "Edge.Length.Ma"] * thesenodelengths[, "Prob.Edge.Survive.t"]
 
-  # We can also calculate the expected loss of length for each edge by multiplying the length of the edge by the probability that the edge goes extinct
-  thesenodelengths[, "Expected.Edge.Length.Ma.loss"] <- thesenodelengths[, "Edge.Length.Ma"] * thesenodelengths[, "Prob.Edge.Extinct.t"]
 
-  # The sum of the tip extinction probabilities for dividing the edge length.  Why we need these is discussed below
-  thesenodelengths[, "sum.Prob.Tip.Extinct.t"] <-  rowSums(Prob.Tip.Extinct.t, na.rm=T)
+    # Calculate node values ##############################################
 
-  # The sum of the tip survival probabilities for dividing the edge length. Why we need these is discussed below
-  thesenodelengths[, "sum.Prob.Tip.Survive.t"] <-  rowSums(Prob.Tip.Survive.t, na.rm=T)
 
-  # Now divide the expected length by the sum of tip survival probabilities to get one unit of relative length. This is so the length can be fairly split among tip probabilities later on
-  # Note that some of these will come out NaN because we are dividing a zero probability of surival by the zero expected length. This taxa correctly won't have any contribution to expected length so it won't have evolutionary distinctiveness
-  thesenodelengths[, "Expected.Edge.Length.rel"] <- thesenodelengths[, "Expected.Edge.Length.Ma"] / thesenodelengths[, "sum.Prob.Tip.Survive.t"]
 
-  # Do the same for loss
-  thesenodelengths[, "Expected.Edge.Length.rel.loss"] <- thesenodelengths[, "Expected.Edge.Length.Ma.loss"] / thesenodelengths[, "sum.Prob.Tip.Extinct.t"]
+    # Make a matrix to store information for each edge (ending at the listed node)
+    variables <- c('Node', "Edge.Length.Ma", "Prob.Edge.Extinct.t", "Prob.Edge.Survive.t",  "Expected.Edge.Length.Ma")
 
-  # Quick sanity check, as the number of daughters increases, the probably of going extinct should drop down
-  #plot(log(thesenodelengths[, "Daughters"]), log(thesenodelengths[ , "Prob.Edge.Extinct.t"]))
+    thesenodelengths <- matrix(data=NA, nrow=length(nodes), ncol=length(variables), dimnames=list(NULL, variables))
+    #head(thesenodelengths)
+    #View(thesenodelengths)
+
+    # For progress report
+    start.time <- proc.time()
+    # Will take about an 30 seconds for a tree with 6,000 tips
+
+
+    for (j in 1:length(nodes)) {
+
+      # Now for every node
+      # What is this node?
+      thesenodelengths[j,'Node'] <- nodes[j]
+
+      # Which nodes/tips subtend this node?
+      sons <- picante::.node.desc(thistree, nodes[j])
+
+      # Which tips subtend this node?
+      # Fill in those slots in the matrix with the right probabilities
+      Prob.Tip.Extinct.t[j, sons$tips] <- tipprobs.extinct.t[sons$tips]
+
+
+      # Now what is the branchlength connecting to that node
+      thesenodelengths[j, "Edge.Length.Ma"] <- thistree$edge.length[j]
+
+
+      # Update progress report every 1000th node
+      if(j %% 1000==0){
+        loop.elapsed.time <- proc.time()-start.time
+        time.per.node <- loop.elapsed.time/j
+
+        time.left <- round((time.per.node*(numnodes-j))[3]/60, digits=1)
+
+        message(paste0("##### Just finished node ", j, " of ", numnodes, " for ", thiscom, ".  Possibly ", time.left, " minutes left for ", thiscom))
+      }
+
+
+
+    }# End j loop
+    #View(thesenodelengths)
+
+
+    rownames(thesenodelengths) <- thesenodelengths[, "Node"]
+
+
+    # Now multiply tip probabilites to get the probability of extinction of each edge
+    # An edge will only go extinct if every tip subtending it goes extinct. So the probability of an edge going extinct is the product of all the extinction probabilities of the tips subtending it
+    thesenodelengths[, "Prob.Edge.Extinct.t"] <-  matrixStats::rowProds(Prob.Tip.Extinct.t, na.rm=T)
+
+
+    # The probability that the edge survives to time t
+    thesenodelengths[, "Prob.Edge.Survive.t"] <-  1 - thesenodelengths[, "Prob.Edge.Extinct.t"]
+
+    # Now we can calculate expected edge length by multiplying the original edge length by the probability that that edge is actually there
+    thesenodelengths[, "Expected.Edge.Length.Ma"] <- thesenodelengths[, "Edge.Length.Ma"] * thesenodelengths[, "Prob.Edge.Survive.t"]
+
+
+
+    # The sum of the expected edge lengths in the expected phylogenetic diversity for the community
+    community.values[i, "Expected.Phylo.Diversity.Ma"] <- sum(thesenodelengths[, "Expected.Edge.Length.Ma"])
+
+
+  }#End i community loop
+
+
+
+
+
+
+
+
+
 
 
 
