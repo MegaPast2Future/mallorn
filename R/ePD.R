@@ -1,11 +1,11 @@
 #' Calculate expected Phylogenetic Diversity (expected PD) for one or more communities
 #'
-#' \code{ePD} calculates the expected Phylogenetic Diversity (expected PD) for one or more communities of taxa. It is a simple wrapper function for \code{\link[mallorn]{eED}}, which does all the hard work.
+#' \code{ePD} calculates the expected Phylogenetic Diversity (expected PD) for one or more communities of taxa and can include expected future evolution.
 #'
 #'
 #' @param tree An object of class phylo.
 #'
-#' @param tip.extinction.probabilities.matrix A taxa by community matrix of extinction (not survival) probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are given a 0 probability of extinction and PD is calculated.
+#' @param tip.extinction.probabilities.matrix A taxon by community matrix of extinction (not survival) probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are given a 0 probability of extinction and PD is calculated.
 #'
 #' @param lambda Numeric. A single instantaneous speciation rate in lineages per million species years.
 #'
@@ -28,7 +28,7 @@
 #'
 #' This will calculate expected PD on a tree without any projected future evolution. Most users will only need to designate a tree and a matrix of extinction (\strong{not survial!}) probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
 #'
-#' Note that \code{ePD} is really just a simple wrapper function for \code{\link[mallorn]{eED}} because the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community will equal the expected PD for a community.
+#' Note that expected PD is simply the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community. \code{ePD} is a convenience function to save you time if you don't care about individual taxon values. However, if you have already calculated expected Evolutionary Distinctiveness in \code{\link[mallorn]{eED}}, you can get the same results as \code{ePD} by using \code{sum(tip.values$Expected.Evol.Distinct.Ma)}. This may save you time if you are working with very large trees.
 #'
 #' @section Future Evolution:
 #' This function can also calculate expected PD given future evolution using a birth-death framework developed by (Mooers \emph{et al.}, 2012). The user must also enter an extinction rate (mu) and specation rate (lambda) in lineages per million species years and a timespan (tMa) in millions of years. The function calculates average expected new branch lengths (evolution in the future) for each tip and probabilites that lineages will go extinct within the timespan tMa. These values are incorportated into the calculation of expected PD. When considering future evolution, the initial extinction probabilities that are loaded into the function are the probabilities that the tips are extinct at 0 million years in the future (i.e. the present), not at some time in the distant future which is set by \code{tMa=}.
@@ -42,7 +42,7 @@
 #'
 #' @return A list with components:
 #' \itemize{
-#' \item \strong{community.values} A single column matrix with expected PD in millions of years of evolution for each community
+#' \item \strong{community.values} A single column matrix with expected Phylogenetic Diversity (expected PD) in millions of years of evolution for each community
 #'
 #' \item \strong{tip.extinction.probabilities.matrix} The original taxon by community matrix of extinction probabilities
 #'
@@ -168,7 +168,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   tipprobs0 <- data.frame(Labels=rownames(tip.extinction.probabilities.matrix2),
                          Prob.Tip.Extinct.0=NA,
                          Prob.Tip.Extinct.t = NA,
-                         Prob.Tip.Survive.t = NA,)
+                         Prob.Tip.Survive.t = NA)
   rownames(tipprobs0) <- tipprobs0$Labels
   #head(tipprobs0)
 
@@ -235,7 +235,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
 
 
-  # Split into different communities
+  # Split into different communities ##############################################
 
   #Values for each community will be calculated in a big for loop
 
@@ -278,10 +278,10 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
 
 
-    # To get the expected new evolution, multiply the probability that a tip survives times the expected average growth per lineage until time t
+    # To get the expected new evolution, multiply the probability that a tip even survives to the present (t=0) times the expected average new growth per lineage
     #If t is 0, these lengths should all be 0
     #The sum of these lengths is the total new evolution on the tree
-    total.new.lineage.growth <- sum(tipprobs$Prob.Tip.Survive.t*new.lineage.growth)
+    total.new.lineage.growth <- sum(tipprobs$Prob.Tip.Survive.0*new.lineage.growth)
 
 
     #Get the number ot tips

@@ -10,7 +10,7 @@ ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
 \arguments{
 \item{tree}{An object of class phylo.}
 
-\item{tip.extinction.probabilities.matrix}{A taxa by community matrix of extinction (not survival) probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are given a 0 probability of extinction and PD is calculated.}
+\item{tip.extinction.probabilities.matrix}{A taxon by community matrix of extinction (not survival) probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are given a 0 probability of extinction and PD is calculated.}
 
 \item{lambda}{Numeric. A single instantaneous speciation rate in lineages per million species years.}
 
@@ -25,9 +25,9 @@ ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
 \value{
 A list with components:
 \itemize{
-\item \strong{community.values} A single column matrix with expected PD in millions of years of evolution for each community
+\item \strong{community.values} A single column matrix with expected Phylogenetic Diversity (expected PD) in millions of years of evolution for each community
 
-\item \strong{tip.extinction.probabilities.matrix} The original taxa by community matrix of extinction probabilities
+\item \strong{tip.extinction.probabilities.matrix} The original taxon by community matrix of extinction probabilities
 
 \item \strong{tree} The original phylo object input
 
@@ -42,7 +42,7 @@ A list with components:
 }
 }
 \description{
-\code{ePD} calculates the expected Phylogenetic Diversity (expected PD) for one or more communities of taxa. It is a simple wrapper function for \code{\link[mallorn]{eED}}, which does all the hard work.
+\code{ePD} calculates the expected Phylogenetic Diversity (expected PD) for one or more communities of taxa and can include expected future evolution.
 }
 \section{Background}{
  Phylogenetic Diversity (PD) (Faith, 1992) is a biodiversity metric that measures the total amount of evolutionary history in a community. It is defined as the sum of all branch lengths neccesary to connect a given set of taxa to the root of a phylogenetic tree and can be calculated in the function \code{\link[picante]{pd}}. PD assumes that all tips have a probability of 1 of being measured, though.
@@ -58,7 +58,7 @@ Typical usage is
 
 This will calculate expected PD on a tree without any projected future evolution. Most users will only need to designate a tree and a matrix of extinction (\strong{not survial!}) probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
 
-Note that \code{ePD} is really just a simple wrapper function for \code{\link[mallorn]{eED}} because the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community will equal the expected PD for a community.
+Note that expected PD is simply the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community. \code{ePD} is a convenience function to save you time if you don't care about individual taxon values. However, if you have already calculated expected Evolutionary Distinctiveness in \code{\link[mallorn]{eED}}, you can get the same results as \code{ePD} by using \code{sum(tip.values$Expected.Evol.Distinct.Ma)}. This may save you time if you are working with very large trees.
 }
 
 \section{Future Evolution}{
