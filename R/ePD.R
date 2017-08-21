@@ -62,6 +62,18 @@
 #'
 #' }
 #'
+#'
+#' @examples
+#' data(bear_tree)
+#' data(bear_matrix)
+#'
+#' # Normal usage (without future evolution)
+#' ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix)
+#'
+#' # Usage with future evolution
+#' ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
+#'
+#'
 #' @author
 #'  Matt Davis
 #'

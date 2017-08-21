@@ -80,6 +80,18 @@ This function has been tested only on ultrametric, fully resolved phylogenetic t
 This function uses code and internal functions from the \pkg{picante} (Kembel \emph{et al.}, 2010) and \pkg{ape} (Paradis \emph{et al.}, 2004) packages.
 }
 
+\examples{
+data(bear_tree)
+data(bear_matrix)
+
+# Normal usage (without future evolution)
+ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix)
+
+# Usage with future evolution
+ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
+
+
+}
 \references{
 Faith, D. P. (1992). Conservation evaluation and phylogenetic diversity. Biological Conservation, 61(1), 1–10.
 
