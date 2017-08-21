@@ -118,6 +118,18 @@ This function has been tested only on ultrametric, fully resolved phylogenetic t
 This function uses code and internal functions from the \pkg{picante} (Kembel \emph{et al.}, 2010) and \pkg{ape} (Paradis \emph{et al.}, 2004) packages.
 }
 
+\examples{
+data(bear_tree)
+data(bear_probs)
+
+# Normal usage (without future evolution)
+eED(tree=bear_tree, tip.extinction.probabilities=bear_probs)
+
+# Usage with future evolution
+eED(tree=bear_tree, tip.extinction.probabilities=bear_probs, lambda=0.276, mu=0.272, tMa=2)
+
+
+}
 \references{
 Faith, D. P. (2008). Threatened species and the potential loss of phylogenetic diversity: conservation scenarios based on estimated extinction probabilities and phylogenetic risk analysis. Conservation Biology, 22(6), 1461–1470.
 

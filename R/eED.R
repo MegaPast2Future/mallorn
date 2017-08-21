@@ -100,6 +100,19 @@
 #'
 #' }
 #'
+#'
+#' @examples
+#' data(bear_tree)
+#' data(bear_probs)
+#'
+#' # Normal usage (without future evolution)
+#' eED(tree=bear_tree, tip.extinction.probabilities=bear_probs)
+#'
+#' # Usage with future evolution
+#' eED(tree=bear_tree, tip.extinction.probabilities=bear_probs, lambda=0.276, mu=0.272, tMa=2)
+
+#'
+#'
 #' @author
 #'  Matt Davis
 #'
