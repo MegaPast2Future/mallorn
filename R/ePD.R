@@ -28,7 +28,7 @@
 #'
 #' This will calculate expected PD on a tree without any projected future evolution. Most users will only need to designate a tree and a matrix of extinction (\strong{not survial!}) probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
 #'
-#' Note that expected PD is simply the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community. \code{ePD} is a convenience function to save you time if you don't care about individual taxon values. However, if you have already calculated expected Evolutionary Distinctiveness in \code{\link[mallorn]{eED}}, you can get the same results as \code{ePD} by using \code{sum(tip.values$Expected.Evol.Distinct.Ma)}. This may save you time if you are working with very large trees.
+#' Note that expected PD is simply the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community. \code{ePD} is a convenience function to save you time if you don't care about individual taxon values. However, if you have already calculated expected Evolutionary Distinctiveness in \code{\link[mallorn]{eED}}, you can get the same results as \code{ePD} by using \code{sum(tip.values$Expected.Evol.Distinct.Ma)}. This may save you time if you are working with very large trees. If all your tip extinction probabilities are binary, you should just use \code{\link[picante]{pd}}, which will likely be much faster than \code{ePD}.
 #'
 #' @section Future Evolution:
 #' This function can also calculate expected PD given future evolution using a birth-death framework developed by (Mooers \emph{et al.}, 2012). The user must also enter an extinction rate (mu) and specation rate (lambda) in lineages per million species years and a timespan (tMa) in millions of years. The function calculates average expected new branch lengths (evolution in the future) for each tip and probabilites that lineages will go extinct within the timespan tMa. These values are incorportated into the calculation of expected PD. When considering future evolution, the initial extinction probabilities that are loaded into the function are the probabilities that the tips are extinct at 0 million years in the future (i.e. the present), not at some time in the distant future which is set by \code{tMa=}.
@@ -165,8 +165,14 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
 
   thistree <- tree
 
+  # How many communities are there?
+  communities <- colnames(tip.extinction.probabilities.matrix)
+  numcommunities <- length(communities)
+
+
   # Make sure the names of the extinction probabilities are in the same order as the tree tip labels
-  tip.extinction.probabilities.matrix2 <- tip.extinction.probabilities.matrix[thistree$tip.label, ]
+  # Add drop=F to maintain matrix structure
+  tip.extinction.probabilities.matrix2 <- tip.extinction.probabilities.matrix[thistree$tip.label, , drop=F]
 
 
   tipprobs0 <- data.frame(Labels=rownames(tip.extinction.probabilities.matrix2),
@@ -176,9 +182,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   rownames(tipprobs0) <- tipprobs0$Labels
   #head(tipprobs0)
 
-  # How many communities are there?
-  communities <- colnames(tip.extinction.probabilities.matrix2)
-  numcommunities <- length(communities)
+
 
   # Make the matrix to store final results in
   community.values <- matrix(data=NA, nrow=numcommunities, ncol=2, dimnames=list(colnames(tip.extinction.probabilities.matrix2), c("Expected.Phylo.Diversity.Ma", "Expected.Species.Diversity")))
