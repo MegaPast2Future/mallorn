@@ -11,6 +11,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4)
 Imports:  ape, matrixStats, picante
+Suggests: ggplot2, ggtree
 URL: http://github.com/ursus-americanus/mallorn
 BugReports: http://github.com/ursus-americanus/mallorn/issues
 RoxygenNote: 6.0.1

@@ -6,10 +6,10 @@
 \alias{mallorn-package}
 \title{Compute Expected Evolutionary Distinctiveness}
 \description{
-This is simple package to calculate Expected Evolutionary Distinctiveness (expected ED) for each tip of a phylogenetic tree.
+This is simple package to calculate expected Phylogenetic Diversity (expected PD) and expected Evolutionary Distinctiveness (expected ED) for each tip of a phylogenetic tree.
 }
 \details{
-Currently, \pkg{mallorn} has only one function \code{\link{eED}}, which is used to calculate expected Evolutionary Distinctiveness (expected ED), the expected amount of unique evolutionary history belonging to each taxa.
+Currently, \pkg{mallorn} has two functions: \code{\link{ePD}} and \code{\link{eED}}. \code{\link{ePD}} calculates expected PD, the expected amount of evolutionary history represented by a community. \code{\link{eED}} calculates expected ED, the expected amount of unique evolutionary history belonging to each taxon.
 }
 \seealso{
 Useful links:
