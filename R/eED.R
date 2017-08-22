@@ -60,7 +60,7 @@
 #' \itemize{
 #' \item \strong{tip.values} A data.frame containing values for each tip
 #' \describe{
-#'   \item{Labels}{Names for each tip that match tree labels.}
+#'   \item{Label}{Names for each tip that match tree labels.}
 #'   \item{Prob.Tip.Extinct.0}{The probability that a tip is extinct at the start of the analysis. These are the tip extinction probabilities that were entered by the user during the function call.}
 #'   \item{Prob.Tip.Extinct.t}{The probability that a tip (or rather the lineage descended from that tip) is extinct by \code{tMa} into the future. If \code{tMa} is not designated, these probabilities will be the same as Prob.Tip.Extinct.0.}
 #'   \item{Prob.Tip.Survive.t}{The probability that a tip (or rather the lineage descended from that tip) survives \code{tMa} into the future.}
@@ -225,7 +225,7 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
   # Make sure the names of the extinction probabilities are in the same order as the tree tip labels
   tip.extinction.probabilities2 <- tip.extinction.probabilities[thistree$tip.label]
 
-  tipprobs <- data.frame(Labels=names(tip.extinction.probabilities2),
+  tipprobs <- data.frame(Label=names(tip.extinction.probabilities2),
                          Prob.Tip.Extinct.0=tip.extinction.probabilities2,
                          Prob.Tip.Extinct.t = NA,
                          Prob.Tip.Survive.t = NA,
@@ -236,7 +236,7 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
                          Expected.Evol.Distinct.perc.loss = NA,
                          Pendant.Edge.Ma = NA,
                          Expected.Pendant.Edge.Ma.loss = NA)
-  rownames(tipprobs) <- tipprobs$Labels
+  rownames(tipprobs) <- tipprobs$Label
   #head(tipprobs)
 
 
@@ -460,21 +460,21 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
     this.taxas.nodes <- nodes[!is.na( Prob.Tip.Extinct.t[, thistaxa])]
 
     # Now multiply the relative loss of length by extinction probability of this taxon to see how much of the lost length it is responsible for
-    tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma.loss"] <- sum(tipprobs[thistaxa, "Prob.Tip.Extinct.t"] * thesenodelengths[nodes %in% this.taxas.nodes, "Expected.Edge.Length.rel.loss"], na.rm = T)
+    tipprobs[tipprobs$Label==thistaxa, "Expected.Evol.Distinct.Ma.loss"] <- sum(tipprobs[thistaxa, "Prob.Tip.Extinct.t"] * thesenodelengths[nodes %in% this.taxas.nodes, "Expected.Edge.Length.rel.loss"], na.rm = T)
 
     # The sum of that is the expected evolutionary distinctiveness of the expected loss of PD for this taxa
 
 
     # Do the same for expected evolutionary distinctiveness (excluding new evolution of branch lengths)
-    tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma.no.new" ] <- sum(tipprobs[thistaxa, "Prob.Tip.Survive.t"] * thesenodelengths[nodes %in% this.taxas.nodes, "Expected.Edge.Length.rel"], na.rm = T)
+    tipprobs[tipprobs$Label==thistaxa, "Expected.Evol.Distinct.Ma.no.new" ] <- sum(tipprobs[thistaxa, "Prob.Tip.Survive.t"] * thesenodelengths[nodes %in% this.taxas.nodes, "Expected.Edge.Length.rel"], na.rm = T)
 
     # Get the expected growth of tree length per lineage to time t and multiply it by the probability that a tip even survived to time 0. Then add that to the expected evolutionary distinctiveness excluding new evolution
-    tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma" ] <- tipprobs[tipprobs$Labels==thistaxa, "Expected.Evol.Distinct.Ma.no.new" ] + (new.lineage.growth * (1-tipprobs[tipprobs$Labels==thistaxa, "Prob.Tip.Extinct.0" ]))
+    tipprobs[tipprobs$Label==thistaxa, "Expected.Evol.Distinct.Ma" ] <- tipprobs[tipprobs$Label==thistaxa, "Expected.Evol.Distinct.Ma.no.new" ] + (new.lineage.growth * (1-tipprobs[tipprobs$Label==thistaxa, "Prob.Tip.Extinct.0" ]))
 
 
     # Get the length of the pendant edge of this species = the species age = unique evolution
     # Find which edge has that species and then what that edgelength is
-    tipprobs[tipprobs$Labels==thistaxa, "Pendant.Edge.Ma" ] <- thistree$edge.length[which(nodes==q)]
+    tipprobs[tipprobs$Label==thistaxa, "Pendant.Edge.Ma" ] <- thistree$edge.length[which(nodes==q)]
 
 
 
@@ -496,7 +496,7 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
   # PD should equal expected PD + the sum of expected evolutionary distinctiveness loss
   # Expected PD equals the sum of expected evolutionary distinctiveness without new evolution
   # So these two quantities should be the same
-  #picante::pd(tree=thistree, samp=matrix(data=rep(1, ntaxa), nrow=1, dimnames=list(NULL, tipprobs$Labels) ))
+  #picante::pd(tree=thistree, samp=matrix(data=rep(1, ntaxa), nrow=1, dimnames=list(NULL, tipprobs$Label) ))
   #sum(tipprobs$Expected.Evol.Distinct.Ma.no.new, tipprobs$Expected.Evol.Distinct.Ma.loss)
 
 
