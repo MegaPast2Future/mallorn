@@ -189,11 +189,11 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   tip.extinction.probabilities.matrix2 <- tip.extinction.probabilities.matrix[thistree$tip.label, , drop=F]
 
 
-  tipprobs0 <- data.frame(Labels=rownames(tip.extinction.probabilities.matrix2),
+  tipprobs0 <- data.frame(Label=rownames(tip.extinction.probabilities.matrix2),
                          Prob.Tip.Extinct.0=NA,
                          Prob.Tip.Extinct.t = NA,
                          Prob.Tip.Survive.t = NA)
-  rownames(tipprobs0) <- tipprobs0$Labels
+  rownames(tipprobs0) <- tipprobs0$Label
   #head(tipprobs0)
 
 
