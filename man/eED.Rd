@@ -27,7 +27,7 @@ A list with components:
 \itemize{
 \item \strong{tip.values} A data.frame containing values for each tip
 \describe{
-  \item{Labels}{Names for each tip that match tree labels.}
+  \item{Label}{Names for each tip that match tree labels.}
   \item{Prob.Tip.Extinct.0}{The probability that a tip is extinct at the start of the analysis. These are the tip extinction probabilities that were entered by the user during the function call.}
   \item{Prob.Tip.Extinct.t}{The probability that a tip (or rather the lineage descended from that tip) is extinct by \code{tMa} into the future. If \code{tMa} is not designated, these probabilities will be the same as Prob.Tip.Extinct.0.}
   \item{Prob.Tip.Survive.t}{The probability that a tip (or rather the lineage descended from that tip) survives \code{tMa} into the future.}
