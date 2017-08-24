@@ -10,8 +10,6 @@ ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
 \arguments{
 \item{tree}{An object of class phylo.}
 
-\item{tip.extinction.probabilities.matrix}{A taxon by community matrix of extinction (not survival) probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are given a 0 probability of extinction and PD is calculated.}
-
 \item{lambda}{Numeric. A single instantaneous speciation rate in lineages per million species years.}
 
 \item{mu}{Numeric. A single instantaneous extinction rate in lineages per million species years.}
@@ -21,6 +19,8 @@ ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
 \item{auto.save}{Logical. Automatically write the output of the function to the working directory?}
 
 \item{source.of.data}{Character. Optional data tag to include in the function output.}
+
+\item{probabilities.tips.present.matrix}{A taxon by community matrix of presence probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are assumed present and PD is calculated.}
 }
 \value{
 A list with components:
@@ -31,7 +31,7 @@ A list with components:
   \item{Expected.Species.Diversity}{The expected taxonomic richness. This is really the expected number of tips so depending on the taxonomic resolution of your tree, this could be species, subspecies, or whole orders. This will include newly evolved tips if \code{tMa} does not equal 0.}
   }
 
-\item \strong{tip.extinction.probabilities.matrix} The original taxon by community matrix of extinction probabilities
+\item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities
 
 \item \strong{tree} The original phylo object input
 
@@ -51,25 +51,25 @@ A list with components:
 \section{Background}{
  Phylogenetic Diversity (PD) (Faith, 1992) is a biodiversity metric that measures the total amount of evolutionary history in a community. It is defined as the sum of all branch lengths neccesary to connect a given set of taxa to the root of a phylogenetic tree and can be calculated in the function \code{\link[picante]{pd}}. PD assumes that all tips have a probability of 1 of being measured, though.
 
-  Expected Phylogenetic Diversity (expected PD) is the probabilistic implementation of PD (Faith, 2008). Expected PD is the expected amount of evolutionary history contained in a community. Each tip is given a probability of extinction from 0 to 1 that could reflect the taxon's actual extinction probability (e.g. IUCN) or the probability of \emph{not} sampling this taxon in a certain community. Note that if each tip is given a 0 probability of extinction, expected PD simplifies to PD and this function will return the same results as \code{\link[picante]{pd}}.
+  Expected Phylogenetic Diversity (expected PD) is the probabilistic implementation of PD (Faith, 2008). Expected PD is the expected amount of evolutionary history contained in a community. Each tip is given a probability of being present (from 0=absent to 1=present) that could reflect the taxon's actual survival probability (e.g. IUCN Red List Rank), output of a species distribution model, or the probability of sampling this taxon in a certain community. Note that if each tip is given a probability of 1 of being present, expected PD simplifies to PD and this function will return the same results as \code{\link[picante]{pd}}.
 }
 
 \section{Normal Use}{
 
 Typical usage is
 
-\code{ePD(tree, tip.extinction.probabilities.matrix)}
+\code{ePD(tree, probabilities.tips.present.matrix)}
 
-This will calculate expected PD on a tree without any projected future evolution. Most users will only need to designate a tree and a matrix of extinction (\strong{not survial!}) probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
+This will calculate expected PD on a tree without any projected future evolution. Most users will only need to designate a tree and a matrix of probabilties that species are present named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
 
-Note that expected PD is simply the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community. \code{ePD} is a convenience function to save you time if you don't care about individual taxon values. However, if you have already calculated expected Evolutionary Distinctiveness in \code{\link[mallorn]{eED}}, you can get the same results as \code{ePD} by using \code{sum(tip.values$Expected.Evol.Distinct.Ma)}. This may save you time if you are working with very large trees. If all your tip extinction probabilities are binary, you should just use \code{\link[picante]{pd}}, which will likely be much faster than \code{ePD}.
+Note that expected PD is simply the sum of each tip's expected Evolutionary Distinctiveness (expected ED) in a community. \code{ePD} is a convenience function to save you time if you don't care about individual taxon values. However, if you have already calculated expected Evolutionary Distinctiveness in \code{\link[mallorn]{eED}}, you can get the same results as \code{ePD} by using \code{sum(tip.values$Expected.Evol.Distinct.Ma)}. This may save you time if you are working with very large trees. If all your tip extinction probabilities are binary (0 or 1), you should just use \code{\link[picante]{pd}}, which will likely be much faster than \code{ePD}.
 
 \code{ePD} should not be confused with the \pkg{picante} function \code{\link[picante]{expected.pd}}. \code{\link[picante]{expected.pd}} calculates the amount of PD expected given taxonomic richness. It is not a implementation of Faith's (2008) probabilistic PD like \code{ePD}.
 }
 
 \section{Future Evolution}{
 
-This function can also calculate expected PD given future evolution using a birth-death framework developed by (Mooers \emph{et al.}, 2012). The user must also enter an extinction rate (mu) and specation rate (lambda) in lineages per million species years and a timespan (tMa) in millions of years. The function calculates average expected new branch lengths (evolution in the future) for each tip and probabilites that lineages will go extinct within the timespan tMa. These values are incorportated into the calculation of expected PD. When considering future evolution, the initial extinction probabilities that are loaded into the function are the probabilities that the tips are extinct at 0 million years in the future (i.e. the present), not at some time in the distant future which is set by \code{tMa=}. Note that considering future evolution really only makes sense on large global phylogenies. This is not a feature that a typical user will need.
+This function can also calculate expected PD given future evolution using a birth-death framework developed by (Mooers \emph{et al.}, 2012). The user must also enter an extinction rate (mu) and specation rate (lambda) in lineages per million species years and a timespan (tMa) in millions of years. The function calculates average expected new branch lengths (evolution in the future) for each tip and probabilites that lineages will go extinct within the timespan tMa. These values are incorportated into the calculation of expected PD. When considering future evolution, the initial presence probabilities that are loaded into the function are the probabilities that the tips are present at 0 million years in the future (i.e. the present), not at some time in the distant future which is determined by the function iteself once \code{tMa} is set. Note that considering future evolution really only makes sense on large global phylogenies. This is not a feature that a typical user will need.
 }
 
 \section{Warning}{
@@ -87,10 +87,10 @@ data(bear_tree)
 data(bear_matrix)
 
 # Normal usage (without future evolution)
-ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix)
+ePD(tree=bear_tree, probabilities.tips.present.matrix=bear_matrix)
 
-# Usage with future evolution
-ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
+# Usage with future evolution (note that it would not make sense to consider future evolution on a tree this small)
+ePD(tree=bear_tree, probabilities.tips.present.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
 
 
 }
