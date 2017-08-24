@@ -154,7 +154,7 @@
 eED <- function(tree=NA, probabilities.tips.present=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
 
   #What is the function version number
-  version.number <- 3.0
+  version.number <- "3.0"
 
 
 
