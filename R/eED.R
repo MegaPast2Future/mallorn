@@ -1,7 +1,7 @@
 #' Calculate expected Evolutionary Distinctiveness (expected ED) for every tip of a phylogenetic tree
 #'
 #' \code{eED} calculates the expected Evolutionary Distinctiveness (expected ED) for
-#' each tip of a phylogenetic tree given probabilities of extinction for each
+#' each tip of a phylogenetic tree given presence probabilities for each
 #' tip, speciation and extinction rates, and a time into the future. It also
 #' calculates several other values for each edge of the tree like probability of
 #' extinction and number of subtending daughter tips.
@@ -9,7 +9,7 @@
 #'
 #' @param tree An object of class phylo.
 #'
-#' @param tip.extinction.probabilities A named numeric vector of extinction (not survival) probabilities for each tip of the tree. Names must match the tip labels of the tree. If no probabilites are supplied, all tips are given a 0 probability of extinction and ED is calculated.
+#' @param probabilities.tips.present A named numeric vector giving the probabilities that each tip of the tree is present. Names must match the tip labels of the tree. If no probabilites are supplied, all tips are assumed present and ED is calculated.
 #'
 #' @param lambda Numeric. A single instantaneous speciation rate in lineages per million species years.
 #'
@@ -24,7 +24,7 @@
 #' @section Background: Evolutionary Distinctiveness (ED) (Redding \emph{et
 #'   al.}, 2014) fairly apportions Phylogenetic Diversity (PD) among tips
 #'    of a phylogenetic tree and can be calculated in the
-#'   function \code{\link[picante]{evol.distinct}}. From (Redding \emph{et al.}, 2014),
+#'   function \code{\link[picante]{evol.distinct}}. From Redding \emph{et al.} (2014),
 #'   ED "...for species i is the sum of edge lengths along the path from i to
 #'   the root, each edge divided by the number of species ultimately subtending
 #'   it". Thus, ED is the amount of unique evolutionary history that can be
@@ -35,19 +35,17 @@
 #'   implementation of ED so that expected ED is the expected amount of unique
 #'   evolutionary history that can be attributed to each tip. The sum of all
 #'   tip's ED values in a tree will equal PD but the sum of all tip's expected ED values
-#'   will equal expected PD (Faith, 2008). Each tip is given a probability of extinction from
-#'   0 to 1 that could reflect the taxon's actual extinction probability (e.g. IUCN) or
-#'   the probability of \emph{not} sampling this taxon in a certain community. Note that if each tip is given a 0 probability of extinction, expected ED simplifies to ED and this function will return the same results as \code{\link[picante]{evol.distinct}}, \code{type="fair.proportion"}.
+#'   will equal expected PD (Faith, 2008). Each tip is given a probability of being present (from 0=absent to 1=present) that could reflect the taxon's actual survival probability (e.g. IUCN Red List Rank), output of a species distribution model, or the probability of sampling this taxon in a certain community. Note that if each tip is given a probability of 1 of being present, expected ED simplifies to ED and this function will return the same results as \code{\link[picante]{evol.distinct}}, \code{type="fair.proportion"}.
 #'
 #' @section Normal Use:
 #' Typical usage is
 #'
-#' \code{eED(tree, tip.extinction.probabilities)}
+#' \code{eED(tree, probabilities.tips.present)}
 #'
-#' This will calculate expected ED on a tree without any projected future evolution. Most users will only need to designate a tree and a vector of extinction (\strong{not survial!}) probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
+#' This will calculate expected ED on a tree without any projected future evolution. Most users will only need to designate a tree and a vector of presence probabilties named with labels that match the tip labels in the tree. The time \code{tMa=0} is set by default.
 #'
 #' @section Future Evolution:
-#' This function can also calculate expected ED given future evolution using a birth-death framework developed by (Mooers \emph{et al.}, 2012). The user must also enter an extinction rate (mu) and specation rate (lambda) in lineages per million species years and a timespan (tMa) in millions of years. The function calculates average expected new branch lengths (evolution in the future) for each tip and probabilites that lineages will go extinct within the timespan tMa. These values are incorportated into the calculation of expected ED. When considering future evolution, the initial extinction probabilities that are loaded into the function are the probabilities that the tips are extinct at 0 million years in the future (i.e. the present), not at some time in the distant future which is set by \code{tMa=}. Note that considering future evolution really only makes sense on large global phylogenies. This is not a feature that a typical user will need.
+#' This function can also calculate expected ED given future evolution using a birth-death framework developed by (Mooers \emph{et al.}, 2012). The user must also enter an extinction rate (mu) and specation rate (lambda) in lineages per million species years and a timespan (tMa) in millions of years. The function calculates average expected new branch lengths (evolution in the future) for each tip and probabilites that lineages will go extinct within the timespan tMa. These values are incorportated into the calculation of expected ED. When considering future evolution, the initial presence probabilities that are loaded into the function are the probabilities that the tips are present at 0 million years in the future (i.e. the present), not at some time in the distant future which is determined by the function iteself once \code{tMa} is set. Note that considering future evolution really only makes sense on large global phylogenies. This is not a feature that a typical user will need.
 #'
 #' @section Warning:
 #' This function has been tested only on ultrametric, fully resolved phylogenetic trees. Technically, expected ED could be measured on non-ultrametric trees where branch lengths are scaled to something besides time (e.g. number of nucleotide substitutions) but results will be meaningless if you include future evolution. Use non-resovled and non-ultrametric trees at your own peril. Ultrametricity is checked by a call to \code{\link[ape]{is.ultrametric}} but the default tolerance has been set to 0.000001 because a phylogeny where tip-to-root distances vary by no more than 1 millionth of the age of the tree seems ultrametric enough.
@@ -61,13 +59,14 @@
 #' \item \strong{tip.values} A data.frame containing values for each tip
 #' \describe{
 #'   \item{Label}{Names for each tip that match tree labels.}
-#'   \item{Prob.Tip.Extinct.0}{The probability that a tip is extinct at the start of the analysis. These are the tip extinction probabilities that were entered by the user during the function call.}
+#'   \item{Prob.Tip.Survive.0}{The probability that a tip is extant/present at the start of the analysis. These are the probabilities of tips being present that were entered by the user in the function call.}
+#'   \item{Prob.Tip.Extinct.0}{The probability that a tip is extinct/not present at the start of the analysis.}
 #'   \item{Prob.Tip.Extinct.t}{The probability that a tip (or rather the lineage descended from that tip) is extinct by \code{tMa} into the future. If \code{tMa} is not designated, these probabilities will be the same as Prob.Tip.Extinct.0.}
-#'   \item{Prob.Tip.Survive.t}{The probability that a tip (or rather the lineage descended from that tip) survives \code{tMa} into the future.}
+#'   \item{Prob.Tip.Survive.t}{The probability that a tip (or rather the lineage descended from that tip) survives \code{tMa} into the future. If \code{tMa} is not designated, these probabilities will be the same as Prob.Tip.Survive.0.}
 #'   \item{Expected.Evol.Distinct.Ma.no.new}{The Expected Evolutionary Distinctiveness (expected ED) for a tip (in units of millions of years of unique evolution) without any new evolution into the future. This is the value most users will want to use for expected ED.}
 #'   \item{Expected.Evol.Distinct.Ma}{Expected ED for each tip (or rather the lineage descended from that tip) that includes new branch lengths generated through evolution until \code{tMa} into the future. Measured in units millions of years of unique evolution. If \code{tMa=0}, this will be the same as Expected.Evol.Distinct.Ma.no.new as new evolution was not considered.}
 #'   \item{Expected.Evol.Distinct.perc}{Expected ED for each tip (or rather the lineage descended from that tip) as a percent of total tree Phylogenetic Diversity (PD). In other words, what percentage of the total tree can be attributed to each tip. Note that this will include new evolution if \code{tMa} does not equal 0!}
-#'   \item{Expected.Evol.Distinct.Ma.loss}{How much of the expected loss of PD can be attributed to each tip (in units of millions of years of unique evolution). Expected.Evol.Distinct.Ma is how much ED we expect a tip to retain, and Expected.Evol.Distinct.Ma.loss is how much ED we expect a tip to lose. Note that this will not include new evolution per se because new lineages that don't survive until \code{tMa} are not counted as losses. A tip can't lose more ED than it started out with at \code{tMa=0}. If \code{tMa=0}, the sum of each tip's Expected.Evol.Distinct.Ma and Expected.Evol.Distinct.Ma.loss will equal PD.}
+#'   \item{Expected.Evol.Distinct.Ma.loss}{How much of the expected loss of PD (from a scenario where all tips on the tree are present) can be attributed to each tip (in units of millions of years of unique evolution). Expected.Evol.Distinct.Ma is how much ED we expect a tip to retain, and Expected.Evol.Distinct.Ma.loss is how much ED we expect a tip to lose. Note that this will not include new evolution per se because new lineages that don't survive until \code{tMa} are not counted as losses. A tip can't lose more ED than it started out with at \code{tMa=0}. If \code{tMa=0}, the sum of each tip's Expected.Evol.Distinct.Ma and Expected.Evol.Distinct.Ma.loss will equal PD.}
 #'   \item{Expected.Evol.Distinct.perc.loss}{The expected loss in ED for each tip as a percentage of total tree PD. Note that this will not include new evolution per se because new lineages that don't survive until \code{tMa} are not counted as losses. A tip can't lose more ED than it started out with at \code{tMa=0}.}
 #'   \item{Pendant.Edge.Ma}{The length of a tip's pendant edge in units of millions of years of unique evolution. If tips are species, this is the age of the species. Note that this \strong{does not} include future evolution regardless of what \code{tMa} equals.}
 #'   \item{Expected.Pendant.Edge.Ma.loss}{How much of a tip's pendant edge is expected to be lost (in units of millions of years of unique evolution). For example, if a species has a .74 probability of extinction by \code{tMa}, we would expect 74 \% of the pendant edge to be lost. Note that this \strong{does not} include branch lengths from future evolution regardless of what \code{tMa} equals but it will use the Prob.Tip.Extinct.t to calculate the expected loss \strong{not} Prob.Tip.Extinct.0 if \code{tMa} does not equal 0. This means that Expected.Pendant.Edge.Ma.loss is the amount of the tip's \emph{original} pendant edge that we would expect to lose given any future evolution.}
@@ -106,10 +105,10 @@
 #' data(bear_probs)
 #'
 #' # Normal usage (without future evolution)
-#' eED(tree=bear_tree, tip.extinction.probabilities=bear_probs)
+#' eED(tree=bear_tree, probabilities.tips.present=bear_probs)
 #'
-#' # Usage with future evolution
-#' eED(tree=bear_tree, tip.extinction.probabilities=bear_probs, lambda=0.276, mu=0.272, tMa=2)
+#' # Usage with future evolution (note that it would not make sense to consider future evolution on a tree this small)
+#' eED(tree=bear_tree, probabilities.tips.present=bear_probs, lambda=0.276, mu=0.272, tMa=2)
 
 #'
 #'
@@ -140,6 +139,7 @@
 #Function written by Matt Davis matt.davis@bios.au.dk
 
 
+#Version 3.0 has inputs in probability of presence, not absence
 #Version 2.1 has been renamed eED to avoid namespace problems
 #Version 2.0 has improved error checking and documentation. Auto plotting has been removed.
 #Version 1.2 has optional plotting and auto save commands
@@ -150,10 +150,10 @@
 
 
 
-eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
+eED <- function(tree=NA, probabilities.tips.present=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
 
   #What is the function version number
-  version.number <- 2.1
+  version.number <- 3.0
 
 
 
@@ -173,29 +173,29 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
   #####
 
 
-  # Check the extinction probabilities
-  # Are there extinction probabilities? If not, give every species an extinction probability of 0
-  if(is.null(tip.extinction.probabilities)){
-    warning("No extinction probabilities entered. All tips given 0 probability of going extinct")
+  # Check the tip presence probabilities
+  # Are there tip presence probabilities? If not, give every species a presence probability of 1
+  if(is.null(probabilities.tips.present)){
+    warning("No tip probabilities entered. All tips given a probability of 1 of being present")
 
-    tip.extinction.probabilities <- rep(0, times=length(tree$tip.label))
-    names(tip.extinction.probabilities) <- as.character(tree$tip.label)
+    probabilities.tips.present <- rep(1, times=length(tree$tip.label))
+    names(probabilities.tips.present) <- as.character(tree$tip.label)
   }
 
-  # Are the extinction probabilities actually probabilities?
-  if(any(tip.extinction.probabilities > 1) |
-     any(tip.extinction.probabilities < 0) |
-     !is.numeric(tip.extinction.probabilities)){
-    stop("Check to make sure your tip extinction probabilities are from 0 to 1 and numeric")
+  # Are the presence probabilities actually probabilities?
+  if(any(probabilities.tips.present > 1) |
+     any(probabilities.tips.present < 0) |
+     !is.numeric(probabilities.tips.present)){
+    stop("Check to make sure your tip probabilities are from 0 to 1 and numeric")
   }
 
   # Do the names on the extinction probabilities match the names on the tree
-  if(!all(names(tip.extinction.probabilities) %in% tree$tip.label) |
-     !length(tip.extinction.probabilities)==length(tree$tip.label)){
-    stop("Check that your tree tip names match the extinction probability names")
+  if(!all(names(probabilities.tips.present) %in% tree$tip.label) |
+     !length(probabilities.tips.present)==length(tree$tip.label)){
+    stop("Check that your tree tip names match the tip probability names")
   }
 
-  if(any(duplicated(names(tip.extinction.probabilities))) |
+  if(any(duplicated(names(probabilities.tips.present))) |
     any(duplicated(tree$tip.label))){
     stop("You have duplicate taxa names")
   }
@@ -222,10 +222,14 @@ eED <- function(tree=NA, tip.extinction.probabilities=NULL, lambda=NULL, mu=NULL
 
   thistree <- tree
 
+  # Turn the tip presence probabilities into extinction probabilities
+  tip.extinction.probabilities <- 1-probabilities.tips.present
+
   # Make sure the names of the extinction probabilities are in the same order as the tree tip labels
   tip.extinction.probabilities2 <- tip.extinction.probabilities[thistree$tip.label]
 
   tipprobs <- data.frame(Label=names(tip.extinction.probabilities2),
+                         Prob.Tip.Survive.0=1-tip.extinction.probabilities2,
                          Prob.Tip.Extinct.0=tip.extinction.probabilities2,
                          Prob.Tip.Extinct.t = NA,
                          Prob.Tip.Survive.t = NA,
