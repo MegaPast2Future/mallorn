@@ -3,12 +3,12 @@
 \docType{data}
 \name{bear_probs}
 \alias{bear_probs}
-\title{Extinction probabilites for bears.}
+\title{Probabilites bears are present.}
 \format{A named vector with 13 bear species. The names match the tip labels for \code{\link{bear_tree}}, an included dated phylogeny.}
 \usage{
 bear_probs
 }
 \description{
-Example extinction probabilities for late Quaternary bear species.
+Example probabilities of presence (1 - extinction probabilities) for late Quaternary bear species.
 }
 \keyword{datasets}
