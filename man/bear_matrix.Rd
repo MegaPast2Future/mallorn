@@ -3,12 +3,12 @@
 \docType{data}
 \name{bear_matrix}
 \alias{bear_matrix}
-\title{Extinction probabilites for several communities of bears.}
+\title{Probabilities bears are present in several communities.}
 \format{A taxa by community matrix with 13 bear species for rows. The names match the tip labels for \code{\link{bear_tree}}, an included, dated phylogeny. The columns represent 3 different modern communities of bears: Global, Eurasia, and North America.}
 \usage{
 bear_matrix
 }
 \description{
-Example extinction (i.e. non occurence) probabilities for late Quaternary bear species for the whole world, Eurasia, and North America.
+Example presence probabilities (1 - extinction probabilities) for late Quaternary bear species for the whole world, Eurasia, and North America.
 }
 \keyword{datasets}

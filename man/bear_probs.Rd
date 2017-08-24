@@ -9,6 +9,6 @@
 bear_probs
 }
 \description{
-Example probabilities of presence (1 - extinction probabilities) for late Quaternary bear species.
+Example presence probabilities (1 - extinction probabilities) for late Quaternary bear species.
 }
 \keyword{datasets}
