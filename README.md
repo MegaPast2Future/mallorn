@@ -1,7 +1,7 @@
 # mallorn
 `mallorn` is an R package for calculating expected Phylogenetic Diversity and Evolutionary Distinctiveness
 
-This package provides functions for calculating probabilistic phylogenetic diversity metrics. These functions are designed to work with extinction probabilities but they would also work in cases where species have variable probabilities of being found in a plot or grid cell.
+This package provides functions for calculating probabilistic phylogenetic diversity metrics. These metrics are neccesary when there is uncertainty whether a taxon is present or absent in a community. This uncertainty could arise, for example, from sampling uncertainty, the continuous output of a species distribution model, or a species' extinction probability. If the probability of species being in a community is binary (0 or 1), you can use the functions in the [`picante`](https://cran.r-project.org/web/packages/picante/index.html) pacakge. But if the probability of species being in a community is 0.67, you need to use the probablistic metrics found in `mallorn`.
 
 Warning! This package is still in developement. Use it with caution.
 
@@ -32,7 +32,7 @@ library(mallorn)
 data(bear_tree)
 data(bear_matrix)
 
-ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix)
+ePD(tree=bear_tree, probabilities.tips.present.matrix=bear_matrix)
 ```
 
 
@@ -45,7 +45,7 @@ library(mallorn)
 data(bear_tree)
 data(bear_probs)
 
-eED(tree=bear_tree, tip.extinction.probabilities=bear_probs)
+eED(tree=bear_tree, probabilities.tips.present=bear_probs)
 ```
 
 
@@ -59,9 +59,9 @@ data(bear_tree)
 data(bear_probs)
 data(bear_matrix)
 
-ePD(tree=bear_tree, tip.extinction.probabilities.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
+ePD(tree=bear_tree, probabilities.tips.present.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
 
-eED(tree=bear_tree, tip.extinction.probabilities=bear_probs, lambda=0.276, mu=0.272, tMa=2)
+eED(tree=bear_tree, probabilities.tips.present=bear_probs, lambda=0.276, mu=0.272, tMa=2)
 ```
 
 
@@ -80,7 +80,7 @@ data(bear_tree)
 data(bear_probs)
 
 # Calculate expected ED
-res <- eED(tree=bear_tree, tip.extinction.probabilities=bear_probs)
+res <- eED(tree=bear_tree, probabilities.tips.present=bear_probs)
 
 # Extract internal node and edge values
 edge.values <- res$edge.values
