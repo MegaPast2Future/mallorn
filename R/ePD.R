@@ -103,7 +103,7 @@
 
 #Function written by Matt Davis matt.davis@bios.au.dk
 
-
+#Version 2.0 has inputs in probability of presence, not absence
 #Version 1.0
 
 ###############################################################
@@ -111,10 +111,10 @@
 
 
 
-ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
+ePD <- function(tree=NA, probabilities.tips.present.matrix=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
 
   #What is the function version number
-  version.number <- 1.0
+  version.number <- 2.0
 
 
   # Check inputs ##############################################################
@@ -133,26 +133,26 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   #####
 
 
-  # Check the extinction probabilities
-  # Are there extinction probabilities? If not, stop
-  if(is.null(tip.extinction.probabilities.matrix)){
-    stop("You need to enter a taxon by commmunity matrix of extinction probabilities")
+  # Check the presence probabilities
+  # Are there presence probabilities? If not, stop
+  if(is.null(probabilities.tips.present.matrix)){
+    stop("You need to enter a taxon by commmunity matrix giving the probabilities that tips are present")
   }
 
-  # Are the extinction probabilities actually probabilities?
-  if(any(tip.extinction.probabilities.matrix > 1) |
-     any(tip.extinction.probabilities.matrix < 0) |
-     !is.numeric(tip.extinction.probabilities.matrix)){
-    stop("Check to make sure your tip extinction probabilities are from 0 to 1 and numeric")
+  # Are the presence probabilities actually probabilities?
+  if(any(probabilities.tips.present.matrix > 1) |
+     any(probabilities.tips.present.matrix < 0) |
+     !is.numeric(probabilities.tips.present.matrix)){
+    stop("Check to make sure your tip probabilities are from 0 to 1 and numeric")
   }
 
-  # Do the names on the extinction probabilities match the names on the tree
-  if(!all(rownames(tip.extinction.probabilities.matrix) %in% tree$tip.label) |
-     !dim(tip.extinction.probabilities.matrix)[1]==length(tree$tip.label)){
-    stop("Check that your tree tip names match the row names for your extinction probability matrix")
+  # Do the names on the probabilities match the names on the tree?
+  if(!all(rownames(probabilities.tips.present.matrix) %in% tree$tip.label) |
+     !dim(probabilities.tips.present.matrix)[1]==length(tree$tip.label)){
+    stop("Check that your tree tip names match the row names for your tip probability matrix")
   }
 
-  if(any(duplicated(rownames(tip.extinction.probabilities.matrix))) |
+  if(any(duplicated(rownames(probabilities.tips.present.matrix))) |
      any(duplicated(tree$tip.label))){
     stop("You have duplicate taxa names")
   }
@@ -178,6 +178,11 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   # Prep inputs ###############################################################
 
   thistree <- tree
+
+
+  # Change presence matrix to an extinction probability matrix
+  tip.extinction.probabilities.matrix <- 1-probabilities.tips.present.matrix
+
 
   # How many communities are there?
   communities <- colnames(tip.extinction.probabilities.matrix)
@@ -282,7 +287,7 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   prob.lineage.future <- probsurvive(lambda = lambda, mu=mu, tMa=tMa)
 
   # How many tips (species) will be produced for each existing lineage
-  # IF t is 0, this should be 1
+  # If t is 0, this should be 1
   num.tips.per.lineage <- expectedtips(lambda = lambda, mu=mu, tMa=tMa)
 
 
@@ -440,11 +445,11 @@ ePD <- function(tree=NA, tip.extinction.probabilities.matrix=NULL, lambda=NULL, 
   #If t = 0, don't include speciation rates and extinction rates as that will just be confusing.
   if(tMa==0){
 
-    results <- list(community.values=community.values, tip.extinction.probabilities.matrix=tip.extinction.probabilities.matrix, tree=tree, lambda=NA, mu=NA, tMa=tMa, source.of.data=source.of.data)
+    results <- list(community.values=community.values, probabilities.tips.present.matrix=probabilities.tips.present.matrix, tree=tree, lambda=NA, mu=NA, tMa=tMa, source.of.data=source.of.data)
 
   }else{
 
-    results <- list(community.values=community.values, tip.extinction.probabilities.matrix=tip.extinction.probabilities.matrix, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
+    results <- list(community.values=community.values, probabilities.tips.present.matrix=probabilities.tips.present.matrix, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
 
   }
 

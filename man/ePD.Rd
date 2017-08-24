@@ -4,11 +4,13 @@
 \alias{ePD}
 \title{Calculate expected Phylogenetic Diversity (expected PD) for one or more communities}
 \usage{
-ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
+ePD(tree = NA, probabilities.tips.present.matrix = NULL, lambda = NULL,
   mu = NULL, tMa = 0, auto.save = F, source.of.data = NA)
 }
 \arguments{
 \item{tree}{An object of class phylo.}
+
+\item{probabilities.tips.present.matrix}{A taxon by community matrix of presence probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are assumed present and PD is calculated.}
 
 \item{lambda}{Numeric. A single instantaneous speciation rate in lineages per million species years.}
 
@@ -19,8 +21,6 @@ ePD(tree = NA, tip.extinction.probabilities.matrix = NULL, lambda = NULL,
 \item{auto.save}{Logical. Automatically write the output of the function to the working directory?}
 
 \item{source.of.data}{Character. Optional data tag to include in the function output.}
-
-\item{probabilities.tips.present.matrix}{A taxon by community matrix of presence probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are assumed present and PD is calculated.}
 }
 \value{
 A list with components:
