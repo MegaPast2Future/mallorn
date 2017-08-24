@@ -107,7 +107,8 @@
 #' # Normal usage (without future evolution)
 #' eED(tree=bear_tree, probabilities.tips.present=bear_probs)
 #'
-#' # Usage with future evolution (note that it would not make sense to consider future evolution on a tree this small)
+#' # Usage with future evolution
+#' # Note that it would not make sense to consider future evolution on a tree this small
 #' eED(tree=bear_tree, probabilities.tips.present=bear_probs, lambda=0.276, mu=0.272, tMa=2)
 
 #'

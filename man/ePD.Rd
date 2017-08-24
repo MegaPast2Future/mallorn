@@ -89,7 +89,8 @@ data(bear_matrix)
 # Normal usage (without future evolution)
 ePD(tree=bear_tree, probabilities.tips.present.matrix=bear_matrix)
 
-# Usage with future evolution (note that it would not make sense to consider future evolution on a tree this small)
+# Usage with future evolution
+# Note that it would not make sense to consider future evolution on a tree this small
 ePD(tree=bear_tree, probabilities.tips.present.matrix=bear_matrix, lambda=0.276, mu=0.272, tMa=2)
 
 
