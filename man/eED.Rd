@@ -5,7 +5,8 @@
 \title{Calculate expected Evolutionary Distinctiveness (expected ED) for every tip of a phylogenetic tree}
 \usage{
 eED(tree = NA, probabilities.tips.present = NULL, lambda = NULL,
-  mu = NULL, tMa = 0, auto.save = F, source.of.data = NA)
+  mu = NULL, tMa = 0, auto.save = F, save.tree = F,
+  source.of.data = NA)
 }
 \arguments{
 \item{tree}{An object of class phylo.}
@@ -19,6 +20,8 @@ eED(tree = NA, probabilities.tips.present = NULL, lambda = NULL,
 \item{tMa}{Numeric. How many millions of years into the future will expected ED be calculated at? For normal function use where one is just looking at expected ED without any future evolution, tMa should be 0.}
 
 \item{auto.save}{Logical. Automatically write the output of the function to the working directory?}
+
+\item{save.tree}{Logical. Automatically save the tree used with the model output?}
 
 \item{source.of.data}{Character. Optional data tag to include in the function output.}
 }
@@ -56,7 +59,7 @@ A list with components:
 
 }
 
-\item \strong{tree} The original phylo object input
+\item \strong{tree} The original phylo object input. Only present in output if \code{save.tree=T}.
 
 \item \strong{lambda} The original speciation rate input
 

@@ -89,7 +89,7 @@
 #'
 #' }
 #'
-#' \item \strong{tree} The original phylo object input. Only saved if \code{save.tree} is true.
+#' \item \strong{tree} The original phylo object input. Only present in output if \code{save.tree=T}.
 #'
 #' \item \strong{lambda} The original speciation rate input
 #'

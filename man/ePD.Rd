@@ -5,7 +5,8 @@
 \title{Calculate expected Phylogenetic Diversity (expected PD) for one or more communities}
 \usage{
 ePD(tree = NA, probabilities.tips.present.matrix = NULL, lambda = NULL,
-  mu = NULL, tMa = 0, auto.save = F, source.of.data = NA)
+  mu = NULL, tMa = 0, auto.save = F, save.tree = F,
+  save.tip.probabilites = F, source.of.data = NA)
 }
 \arguments{
 \item{tree}{An object of class phylo.}
@@ -20,6 +21,10 @@ ePD(tree = NA, probabilities.tips.present.matrix = NULL, lambda = NULL,
 
 \item{auto.save}{Logical. Automatically write the output of the function to the working directory?}
 
+\item{save.tree}{Logical. Automatically save the tree used with the model output?}
+
+\item{save.tip.probabilites}{Logical. Automatically save the probabilites that tips are present in the model output?}
+
 \item{source.of.data}{Character. Optional data tag to include in the function output.}
 }
 \value{
@@ -31,9 +36,6 @@ A list with components:
   \item{Expected.Species.Diversity}{The expected taxonomic richness. This is really the expected number of tips so depending on the taxonomic resolution of your tree, this could be species, subspecies, or whole orders. This will include newly evolved tips if \code{tMa} does not equal 0.}
   }
 
-\item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities
-
-\item \strong{tree} The original phylo object input
 
 \item \strong{lambda} The original speciation rate input
 
@@ -42,6 +44,10 @@ A list with components:
 \item \strong{tMa} The original timespan input in millions of years
 
 \item \strong{source.of.data} Optional data tag from input
+
+\item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities. Only present in ouput if \code{save.tip.probabilites=T}.
+
+\item \strong{tree} The original phylo object input. Only present in output if \code{save.tree=T}.
 
 }
 }

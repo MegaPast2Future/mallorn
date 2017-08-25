@@ -15,6 +15,10 @@
 #'
 #' @param auto.save Logical. Automatically write the output of the function to the working directory?
 #'
+#' @param save.tree Logical. Automatically save the tree used with the model output?
+#'
+#' @param save.tip.probabilites Logical. Automatically save the probabilites that tips are present in the model output?
+#'
 #' @param source.of.data Character. Optional data tag to include in the function output.
 #'
 #' @section Background: Phylogenetic Diversity (PD) (Faith, 1992) is a biodiversity metric that measures the total amount of evolutionary history in a community. It is defined as the sum of all branch lengths neccesary to connect a given set of taxa to the root of a phylogenetic tree and can be calculated in the function \code{\link[picante]{pd}}. PD assumes that all tips have a probability of 1 of being measured, though.
@@ -50,9 +54,6 @@
 #'   \item{Expected.Species.Diversity}{The expected taxonomic richness. This is really the expected number of tips so depending on the taxonomic resolution of your tree, this could be species, subspecies, or whole orders. This will include newly evolved tips if \code{tMa} does not equal 0.}
 #'   }
 #'
-#' \item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities
-#'
-#' \item \strong{tree} The original phylo object input
 #'
 #' \item \strong{lambda} The original speciation rate input
 #'
@@ -61,6 +62,10 @@
 #' \item \strong{tMa} The original timespan input in millions of years
 #'
 #' \item \strong{source.of.data} Optional data tag from input
+#'
+#' \item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities. Only present in ouput if \code{save.tip.probabilites=T}.
+#'
+#' \item \strong{tree} The original phylo object input. Only present in output if \code{save.tree=T}.
 #'
 #' }
 #'
@@ -112,7 +117,7 @@
 
 
 
-ePD <- function(tree=NA, probabilities.tips.present.matrix=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
+ePD <- function(tree=NA, probabilities.tips.present.matrix=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, save.tree=F, save.tip.probabilites=F, source.of.data=NA){
 
   #What is the function version number
   version.number <- "2.0"
@@ -443,16 +448,19 @@ ePD <- function(tree=NA, probabilities.tips.present.matrix=NULL, lambda=NULL, mu
   # Save results #########################################################################
 
 
-  #If t = 0, don't include speciation rates and extinction rates as that will just be confusing.
+  # If t = 0, don't include speciation rates and extinction rates as that will just be confusing.
   if(tMa==0){
-
-    results <- list(community.values=community.values, probabilities.tips.present.matrix=probabilities.tips.present.matrix, tree=tree, lambda=NA, mu=NA, tMa=tMa, source.of.data=source.of.data)
-
-  }else{
-
-    results <- list(community.values=community.values, probabilities.tips.present.matrix=probabilities.tips.present.matrix, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
-
+    lambda <- NA
+    mu <- NA
   }
+
+
+  results <- list(community.values=community.values, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
+
+  if(save.tip.probabilites==T){results$probabilities.tips.present.matrix <- probabilities.tips.present.matrix}
+
+  if(save.tree==T){results$tree <- tree}
+
 
 
   #Save results if autosave is on

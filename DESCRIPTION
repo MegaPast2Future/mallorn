@@ -1,7 +1,7 @@
 Package: mallorn
 Type: Package
 Title: Compute Probabilistic Phylogenetic Diversity Metrics
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Author: Matt Davis [aut, cre],
 Maintainer: Matt Davis <matt.davis@bios.au.dk>
 Description: This is simple package to calculate expected Evolutionary Distinctiveness
