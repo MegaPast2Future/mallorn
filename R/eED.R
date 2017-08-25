@@ -19,6 +19,8 @@
 #'
 #' @param auto.save Logical. Automatically write the output of the function to the working directory?
 #'
+#' @param save.tree Logical. Automatically save the tree used with the model output?
+#'
 #' @param source.of.data Character. Optional data tag to include in the function output.
 #'
 #' @section Background: Evolutionary Distinctiveness (ED) (Redding \emph{et
@@ -87,7 +89,7 @@
 #'
 #' }
 #'
-#' \item \strong{tree} The original phylo object input
+#' \item \strong{tree} The original phylo object input. Only saved if \code{save.tree} is true.
 #'
 #' \item \strong{lambda} The original speciation rate input
 #'
@@ -140,6 +142,7 @@
 #Function written by Matt Davis matt.davis@bios.au.dk
 
 
+#Version 3.1 allows saving or not saving of the tree used
 #Version 3.0 has inputs in probability of presence, not absence
 #Version 2.1 has been renamed eED to avoid namespace problems
 #Version 2.0 has improved error checking and documentation. Auto plotting has been removed.
@@ -151,7 +154,7 @@
 
 
 
-eED <- function(tree=NA, probabilities.tips.present=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, source.of.data=NA){
+eED <- function(tree=NA, probabilities.tips.present=NULL, lambda=NULL, mu=NULL, tMa=0, auto.save=F, save.tree=F, source.of.data=NA){
 
   #What is the function version number
   version.number <- "3.0"
@@ -526,14 +529,20 @@ eED <- function(tree=NA, probabilities.tips.present=NULL, lambda=NULL, mu=NULL, 
   thesenodelengths2$Expected.Edge.Length.rel.loss <- NULL
   #head(thesenodelengths2)
 
-  #If t = 0, don't include speciation rates and extinction rates as that will just be confusing.
+  # If t = 0, don't include speciation rates and extinction rates as that will just be confusing.
   if(tMa==0){
+    lambda <- NA
+    mu <- NA
+  }
 
-    results <- list(tip.values=tipprobs, edge.values=thesenodelengths2, tree=tree, lambda=NA, mu=NA, tMa=tMa, source.of.data=source.of.data)
+  # If save.tree is true, save the tree, otherwise don't
+  if(save.tree==T){
+
+    results <- list(tip.values=tipprobs, edge.values=thesenodelengths2, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
 
   }else{
 
-    results <- list(tip.values=tipprobs, edge.values=thesenodelengths2, tree=tree, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
+    results <- list(tip.values=tipprobs, edge.values=thesenodelengths2, lambda=lambda, mu=mu, tMa=tMa, source.of.data=source.of.data)
 
     }
 
