@@ -45,9 +45,9 @@ A list with components:
 
 \item \strong{source.of.data} Optional data tag from input
 
-\item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities. Only present in ouput if \code{save.tip.probabilites=T}.
+\item \strong{probabilities.tips.present.matrix} The original taxon by community matrix of presence probabilities. Only present in ouput if \code{save.tip.probabilites=T}
 
-\item \strong{tree} The original phylo object input. Only present in output if \code{save.tree=T}.
+\item \strong{tree} The original phylo object input. Only present in output if \code{save.tree=T}
 
 }
 }
