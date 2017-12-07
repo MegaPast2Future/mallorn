@@ -51,7 +51,7 @@ A list with components:
   \item{Node}{The name of the tipward node connected to the edge. This is where an edge ends.}
   \item{Daughters}{The number of daughter tips subtending a node.}
   \item{Edge.Length.Ma}{The length of the edge in units of millions of years.}
-  \item{Node.Age.Ma}{The age of the node in millions of years in the past. This is the age where the edge starts, the rootward node of an edge.}
+  \item{Edge.Age.Ma}{The age of the edge in millions of years in the past. This is the age where the edge starts, the rootward node of an edge.}
   \item{Prob.Edge.Extinct.t}{The probability that an edge will go extinct by \code{tMa} into the future. An edge only goes extinct if all tips subtending that edge go extinct.}
   \item{Prob.Edge.Survive.t}{The probability that an edge will survive until \code{tMa} into the future.}
   \item{Expected.Edge.Length.Ma}{The expected length of an edge in units of millions of years given the probability the edge will survive until \code{tMa}. For example, if an edge only has a 25 \% chance of surviving until \code{tMa}, we would only expect 25 \% of its length to remain.}
