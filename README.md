@@ -6,7 +6,7 @@ This package provides functions for calculating probabilistic phylogenetic diver
 Warning! This package is still in developement. Use it with caution.
 
 To install it from its
-[GitHub repository](https://github.com/ursus-americanus/mallorn). You first need to
+[GitHub repository](https://github.com/MegaPast2Future/mallorn). You first need to
 install the [devtools](https://github.com/hadley/devtools) package.
 
 ```r
@@ -18,7 +18,7 @@ Then install `mallorn` using the `install_github` function in the
 
 ```r
 library(devtools)
-install_github("ursus-americanus/mallorn")
+install_github("MegaPast2Future/mallorn")
 ```
 
 #### Example use
