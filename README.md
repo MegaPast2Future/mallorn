@@ -1,6 +1,8 @@
 # mallorn
 `mallorn` is an R package for calculating expected Phylogenetic Diversity and Evolutionary Distinctiveness
 
+![mallorn](https://user-images.githubusercontent.com/31075082/33756280-059d7e6a-dbf5-11e7-9735-e9110da58421.png)
+
 This package provides functions for calculating probabilistic phylogenetic diversity metrics. These metrics are neccesary when there is uncertainty whether a taxon is present or absent in a community. This uncertainty could arise, for example, from sampling uncertainty, the continuous output of a species distribution model, or a species' extinction probability. If the probability of species being in a community is binary (0 or 1), you can use the functions in the [`picante`](https://cran.r-project.org/web/packages/picante/index.html) pacakge. But if the probability of species being in a community is 0.67, you need to use the probablistic metrics found in `mallorn`.
 
 Warning! This package is still in developement. Use it with caution.
@@ -107,3 +109,7 @@ p3 <- p2+
 
 print(p3)
 ```
+
+#### Roadmap 
+
+Sometime in the next couple months, we hope to add `mallorn` to CRAN and to add a function for calculating Sørensen's branch based similiarity index. This will allow the user to compare the phylogenetic similiarity of two communities using non-binary species presence or absence probabilities. 
