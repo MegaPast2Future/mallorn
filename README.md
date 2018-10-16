@@ -7,6 +7,13 @@ This package provides functions for calculating probabilistic phylogenetic diver
 
 Warning! This package is still in developement. Use it with caution.
 
+#### Citation
+
+The indices used in `mallorn` are described in the supplemental material for [Davis M, Faurby S, Svenning JC (2018) Mammal diversity will take millions of years to recover from the current biodiversity crisis. PNAS.](http://www.pnas.org/content/early/2018/10/09/1804906115)
+
+
+#### Installation
+
 To install it from its
 [GitHub repository](https://github.com/MegaPast2Future/mallorn). You first need to
 install the [devtools](https://github.com/hadley/devtools) package.
