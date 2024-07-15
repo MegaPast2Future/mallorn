@@ -3,9 +3,9 @@
 
 ![mallorn](https://user-images.githubusercontent.com/31075082/33756280-059d7e6a-dbf5-11e7-9735-e9110da58421.png)
 
-This package provides functions for calculating probabilistic phylogenetic diversity metrics. These metrics are neccesary when there is uncertainty whether a taxon is present or absent in a community. This uncertainty could arise, for example, from sampling uncertainty, the continuous output of a species distribution model, or a species' extinction probability. If the probability of species being in a community is binary (0 or 1), you can use the functions in the [`picante`](https://cran.r-project.org/web/packages/picante/index.html) pacakge. But if the probability of species being in a community is 0.67, you need to use the probablistic metrics found in `mallorn`.
+This package provides functions for calculating probabilistic phylogenetic diversity metrics. These metrics are necessary when there is uncertainty whether a taxon is present or absent in a community. This uncertainty could arise, for example, from sampling uncertainty, the continuous output of a species distribution model, or a species' extinction probability. If the probability of species being in a community is binary (0 or 1), you can use the functions in the [`picante`](https://cran.r-project.org/web/packages/picante/index.html) package. But if the probability of species being in a community is 0.67, you need to use the probabilistic metrics found in `mallorn`.
 
-Warning! This package is still in developement. Use it with caution.
+Warning! This package is still in development. Use it with caution.
 
 #### Citation
 
