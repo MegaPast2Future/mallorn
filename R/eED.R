@@ -9,7 +9,7 @@
 #'
 #' @param tree An object of class phylo.
 #'
-#' @param probabilities.tips.present A named numeric vector giving the probabilities that each tip of the tree is present. Names must match the tip labels of the tree. If no probabilites are supplied, all tips are assumed present and ED is calculated.
+#' @param probabilities.tips.present A named numeric vector giving the probabilities that each tip of the tree is present. Names must match the tip labels of the tree. If no probabilities are supplied, all tips are assumed present and ED is calculated.
 #'
 #' @param lambda Numeric. A single instantaneous speciation rate in lineages per million species years.
 #'

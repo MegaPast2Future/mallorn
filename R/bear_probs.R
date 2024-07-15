@@ -1,4 +1,4 @@
-#' Probabilites bears are present.
+#' Probabilities bears are present.
 #'
 #' Example presence probabilities (1 - extinction probabilities) for late Quaternary bear species.
 #'

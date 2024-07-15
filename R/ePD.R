@@ -5,7 +5,7 @@
 #'
 #' @param tree An object of class phylo.
 #'
-#' @param probabilities.tips.present.matrix A taxon by community matrix of presence probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilites are supplied, all tips are assumed present and PD is calculated.
+#' @param probabilities.tips.present.matrix A taxon by community matrix of presence probabilities for each tip of the tree. Each row is a taxon. Each column is a community (or temporal bin). Taxa names must match the tip labels of the tree. If no probabilities are supplied, all tips are assumed present and PD is calculated.
 #'
 #' @param lambda Numeric. A single instantaneous speciation rate in lineages per million species years.
 #'
